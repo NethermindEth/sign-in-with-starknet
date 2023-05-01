@@ -53,7 +53,7 @@ export const TokenDapp: FC = () => {
     <>
       <div className="columns">
         <form onSubmit={handleSignSubmit}>
-          <h2 className={styles.title}>Sign Message</h2>
+          <h2 className={styles.title}>Sign In Starknet</h2>
 
           <label htmlFor="mint-amount">Short Text</label>
           <input
