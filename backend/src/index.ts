@@ -2,7 +2,7 @@ import cors from 'cors';
 import express, { Express, Request, Response } from 'express';
 import Session from 'express-session';
 import { randomStringForEntropy } from '@stablelib/random';
-// import { generateNonce, SiweMessage } from 'siwe';
+import { SiwsMessage, ErrorTypes, Header, Payload, Signature, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams } from 'siws_lib/lib';
 
 const app = express();
 app.use(express.json());
@@ -43,10 +43,19 @@ app.post('/verify', async function (req: Request, res: Response) {
             res.status(422).json({ message: 'Expected prepareMessage object as body.' });
             return;
         }
-
-        let SIWEObject = new SiweMessage(req.body.message);
-        const { data: message } = await SIWEObject.verify({ signature: req.body.signature, nonce: req.session.nonce });
-
+        const { header, payload, signature } = JSON.parse(req.body);
+        const message = new SiwsMessage({
+          header,
+          payload,
+        });
+        const isVerified = await message.verify({ signature: req.body.signature, nonce: req.session.nonce });
+      
+        if (isVerified.success) {
+            console.log("Verified!");
+          } else {
+            console.log("Not Verified!");
+        }
+        
         req.session.siwe = message;
         req.session.cookie.expires = new Date(message.expirationTime);
         req.session.save(() => res.status(200).send(true));
