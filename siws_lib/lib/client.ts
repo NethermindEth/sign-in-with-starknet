@@ -1,13 +1,20 @@
 // import type { StarknetWindowObject } from "get-starknet";
-import { ec, hash, typedData, Provider, Contract, json, Account } from "starknet";
+import { ec, hash, typedData, num, Provider, Contract, json, Account, CallData, stark } from "starknet";
+// import { TypedData, getMessageHash } from 'starknet';
 import { isUri } from "valid-url";
 
+
 import { ParsedMessage } from "./regex";
-import { ErrorTypes, Header, Payload, Signature, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams } from "./types";
+import { ErrorTypes,  Payload, Signature, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams, VerifyOpts } from "./types";
 import { randomBytes } from "./util";
 import abiAccountContract from "./accountClassAbi.json";
 
+import TypedData = typedData.TypedData;
+import getMessageHash = typedData.getMessageHash;
+import BigNumberish = num.BigNumberish;
+
 export class SiwsMessage {
+  
   // header: Header;
 
   //  payload: Payload;
@@ -216,12 +223,35 @@ export class SiwsMessage {
     }
   }
 
+  public async verifyMessageHash(hash: BigNumberish, signature: string[], provider: Provider): Promise<boolean> {
+    try {
+      const accountContract = new Contract(abiAccountContract, this.address, provider);
+
+      await accountContract.callContract({
+        contractAddress: this.address,
+        entrypoint: 'isValidSignature',
+        calldata: CallData.compile({
+          hash: num.toBigInt(hash).toString(),
+          signature: stark.formatSignature(signature),
+        }),
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  public async verifyMessage(data: typedData.TypedData, signature: string[], provider: Provider): Promise<boolean> {
+    const hash = await getMessageHash(data, this.address);
+    return this.verifyMessageHash(hash, signature, provider);
+  }
+
   /**
    * Validates the integrity of the object by matching it's signature.
    * @param params Parameters to verify the integrity of the message, signature is required.
    * @returns {Promise<SignInWithStarknetResponse>} This object if valid.
    */
-  verify(params: VerifyParams): Promise<SignInWithStarknetResponse> {
+  verify(params: VerifyParams, opts: VerifyOpts ): Promise<SignInWithStarknetResponse> {
     return new Promise<SignInWithStarknetResponse>((resolve, reject) => {
       const { domain, nonce, network, signature } = params;
 
@@ -280,7 +310,7 @@ export class SiwsMessage {
         }
       }
 
-      const message = hash.starknetKeccak(this.prepareMessage()).toString("hex").substring(0, 31);
+      const message = hash.starknetKeccak(this.prepareMessage()).toString(16).substring(0, 31);
       const typedMessage = {
         domain: {
           name: "Example DApp",
@@ -301,50 +331,29 @@ export class SiwsMessage {
         },
       };
 
-      const accountContract = new Contract(abiAccountContract, this.address, provider);
-      new Account(
-//      const starknetObject = params.kp as StarknetWindowObject;
-      if (starknetObject.account !== undefined) {
-        starknetObject.account
-          .verifyMessage(typedMessage, signature.s)
-          .then((valid) => {
-            if (!valid)
-              return reject({
-                success: false,
-                data: this,
-                error: new SignInWithStarknetError(ErrorTypes.INVALID_SIGNATURE, "Signature verfication failed"),
-              });
-            return resolve({
-              success: true,
-              data: this,
-            });
-          })
-          .catch(() => {
-            return resolve({
-              success: false,
-              data: this,
-              error: new SignInWithStarknetError(
-                ErrorTypes.INVALID_SIGNATURE,
-                "Signature verfication failed. Check if you have an account created."
-              ),
-            });
+      this.verifyMessage(typedMessage, signature.s, opts.provider)
+      .then((valid) => {
+        if (!valid)
+          return reject({
+            success: false,
+            data: this,
+            error: new SignInWithStarknetError(ErrorTypes.INVALID_SIGNATURE, "Signature verfication failed"),
           });
-      } else {
-        // TODO
-        // const valid = ec.verify(params.kp, typedData.getMessageHash(typedMessage, this.address), signature.s);
-        // if (!valid) {
-        //   resolve({
-        //     success: false,
-        //     data: this,
-        //     error: new SignInWithStarknetError(ErrorTypes.INVALID_SIGNATURE, "Signature verfication failed"),
-        //   });
-        // } else {
-        //   resolve({
-        //     success: true,
-        //     data: this,
-        //   });
-        // }
-      }
+        return resolve({
+          success: true,
+          data: this,
+        });
+      })
+      .catch(() => {
+        return resolve({
+          success: false,
+          data: this,
+          error: new SignInWithStarknetError(
+            ErrorTypes.INVALID_SIGNATURE,
+            "Signature verfication failed. Check if you have an account created."
+          ),
+        });
+      });
     });
   }
 }

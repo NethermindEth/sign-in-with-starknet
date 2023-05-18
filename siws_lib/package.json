@@ -25,12 +25,12 @@
   "dependencies": {
     "@stablelib/random": "^1.0.1",
     "get-starknet": "^2.1.0",
-    "starknet": "^4.22.0",
+    "starknet": "^v5.10.2",
     "uri-js": "^4.4.1",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
-    "@types/node": "^20.1.7",
+    "@types/node": "^20.2.1",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "eslint": "^8.15.0",

@@ -1,4 +1,4 @@
-import { KeyPair, Provider } from "starknet";
+import {  Provider } from "starknet";
 
 import { SiwsMessage } from "./client";
 
@@ -12,10 +12,10 @@ export class Signature {
   s: string[]; // signature
 }
 
-export class Header {
-  /** specifies format of the payload. */
-  t: string;
-}
+// export class Header {
+//   /** specifies format of the payload. */
+//   t: string;
+// }
 
 export class Payload {
   /** RFC 4501 dns authority that is requesting the signing. */
