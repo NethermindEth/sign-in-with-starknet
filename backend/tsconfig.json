@@ -2,12 +2,21 @@
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
-    "target": "es6",
+    "target": "ES2020" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "lib": [
+      "ES2020",
+      "es7",
+      "es6",
+      "dom"
+    ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+
   },
   "lib": [
-    "es2015"
+    "ES2020"
   ]
 }

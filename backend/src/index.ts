@@ -2,10 +2,17 @@ import cors from 'cors';
 import express, { Express, Request, Response } from 'express';
 import Session from 'express-session';
 import { randomStringForEntropy } from '@stablelib/random';
-import { SiwsMessage, ErrorTypes, Header, Payload, Signature, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams } from 'siws_lib/lib';
+import { SiwsMessage, ErrorTypes,  Signature, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams } from 'siws_lib/lib';
+import starknet from 'starknet';
 
 const app = express();
-app.use(express.json());
+const provider = new starknet.Provider({
+    sequencer: {
+      network:  starknet.constants.StarknetChainId.SN_GOERLI // or 'goerli-alpha'
+    }
+  })
+  
+  app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:8080',
     credentials: true,
@@ -43,24 +50,23 @@ app.post('/verify', async function (req: Request, res: Response) {
             res.status(422).json({ message: 'Expected prepareMessage object as body.' });
             return;
         }
-        const { header, payload, signature } = JSON.parse(req.body);
-        const message = new SiwsMessage({
-          header,
-          payload,
-        });
-        const isVerified = await message.verify({ signature: req.body.signature, nonce: req.session.nonce });
+        const message = new SiwsMessage(
+            req.body.message,    
+        );
+        
+        const isVerified = await message.verify({ signature: req.body.signature, nonce: req.session.nonce }, {provider:provider});
       
         if (isVerified.success) {
             console.log("Verified!");
-          } else {
+        } else {
             console.log("Not Verified!");
         }
         
-        req.session.siwe = message;
+        req.session.siws = message;
         req.session.cookie.expires = new Date(message.expirationTime);
         req.session.save(() => res.status(200).send(true));
     } catch (e) {
-        req.session.siwe = null;
+        req.session.siws = null;
         req.session.nonce = null;
         console.error(e);
         switch (e) {

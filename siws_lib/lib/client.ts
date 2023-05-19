@@ -5,7 +5,7 @@ import { isUri } from "valid-url";
 
 
 import { ParsedMessage } from "./regex";
-import { ErrorTypes,  Payload, Signature, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams, VerifyOpts } from "./types";
+import { ErrorTypes,   Signature, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams, VerifyOpts } from "./types";
 import { randomBytes } from "./util";
 import abiAccountContract from "./accountClassAbi.json";
 
@@ -337,7 +337,7 @@ export class SiwsMessage {
           return reject({
             success: false,
             data: this,
-            error: new SignInWithStarknetError(ErrorTypes.INVALID_SIGNATURE, "Signature verfication failed"),
+            error: new SignInWithStarknetError(ErrorTypes.INVALID_SIGNATURE, "Signature verification failed"),
           });
         return resolve({
           success: true,
