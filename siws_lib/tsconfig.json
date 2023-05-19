@@ -1,12 +1,19 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "ESNext",
+    "target": "ES2020" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "lib": [
+      "ES2020",
+      "es7",
+      "es6",
+      "dom"
+    ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
     "declaration": true,
     "outDir": "./dist",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "types": ["node"]
+    "types": ["node"],
+    "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": ["lib/*"]
 }
