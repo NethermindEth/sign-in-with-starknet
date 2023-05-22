@@ -1,6 +1,6 @@
 import { connect, disconnect, StarknetWindowObject } from "get-starknet"
 import { shortString, constants, hash} from "starknet"
-import { SiwsMessage } from "siws_lib/lib"
+import { SiwsMessage } from "siws_lib/dist"
 
 
 export const isWalletConnected = (): boolean => {
@@ -20,15 +20,16 @@ export const walletAddress = async (): Promise<string | undefined> => {
   } catch { }
 }
 
-const BACKEND_ADDR = "http://localhost:3000";
+const BACKEND_ADDR = "http://localhost:3001";
 
-const domain = window.location.host;
-const origin = window.location.origin;
 
 export async function createSiwsMessage(statement:string) {
+    const domain = window.location.host;
+    const origin = window.location.origin;
     const res = await fetch(`${BACKEND_ADDR}/nonce`, {
         credentials: 'include',
     });
+    const responseNonce = await res.text()
     const address= await walletAddress();
     const message = new SiwsMessage({
         domain,
@@ -37,7 +38,7 @@ export async function createSiwsMessage(statement:string) {
         uri: origin,
         version: '1',
         chainId: parseInt( window.starknet?.provider?.chainId),
-        nonce: await res.text()
+        nonce: responseNonce
     });
     return message.prepareMessage();
 }
@@ -76,15 +77,16 @@ export const networkUrl = (): string | undefined => {
 export const signMessage = async (message: string) => {
   const starknet = window.starknet as StarknetWindowObject
   await starknet.enable()
-
   // checks that enable succeeded
   if (starknet.isConnected === false)
     throw Error("starknet wallet not connected")
-  if (!shortString.isShortString(message)) {
-    throw Error("message must be a short string")
-  }
+  // if (!shortString.isShortString(message)) {
+  //   throw Error("message must be a short string" + message)
+  // }
 
   message = hash.starknetKeccak(message).toString(16).substring(0, 31);
+  console.log("message to sign: " + message)
+
   return starknet.account.signMessage({
     domain: {
       name: "Example DApp",
