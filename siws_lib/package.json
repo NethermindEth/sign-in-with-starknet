@@ -1,15 +1,18 @@
 {
   "name": "siws_lib",
-  "version": "2.1.4",
+  "version": "2.1.8",
   "description": "Sign-In with Starknet helper library",
-  "main": "dist/siws.js",
-  "types": "dist/siws.d.ts",
+  "main": "./dist/siws.js",
+  "types": "./dist/siws.d.ts",
   "directories": {
-    "lib": "lib"
+    "lib": "src"
   },
+
   "scripts": {
     "test": "jest",
-    "build": "tsc",
+    "build": "tsdx build",
+    "gcp-build": "tsdx build",
+    "clean": "rm -fr node_modules dist",
     "lint": "eslint --ext .js,.ts .",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
@@ -36,6 +39,7 @@
     "eslint": "^8.15.0",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.6.2",
+    "tsdx": "^0.13.3",
     "typescript": "^5.0.4"
   },
   "peerDependencies": {

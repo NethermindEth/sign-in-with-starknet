@@ -1,5 +1,6 @@
 import { connect, disconnect, StarknetWindowObject } from "get-starknet"
-import { shortString, constants } from "starknet"
+import { shortString, constants, hash} from "starknet"
+import { SiwsMessage } from "siws_lib/lib"
 
 
 export const isWalletConnected = (): boolean => {
@@ -19,14 +20,36 @@ export const walletAddress = async (): Promise<string | undefined> => {
   } catch { }
 }
 
+const BACKEND_ADDR = "http://localhost:3000";
+
+const domain = window.location.host;
+const origin = window.location.origin;
+
+export async function createSiwsMessage(statement:string) {
+    const res = await fetch(`${BACKEND_ADDR}/nonce`, {
+        credentials: 'include',
+    });
+    const address= await walletAddress();
+    const message = new SiwsMessage({
+        domain,
+        address,
+        statement,
+        uri: origin,
+        version: '1',
+        chainId: parseInt( window.starknet?.provider?.chainId),
+        nonce: await res.text()
+    });
+    return message.prepareMessage();
+}
+
 export const networkId = (): string | undefined => {
   try {
-    const chainId = window.starknet?.provider?.chainId
-    if (constants.StarknetChainId.MAINNET === chainId) {
+    const chainId: string = window.starknet?.provider?.chainId === undefined ? constants.StarknetChainId.SN_GOERLI : window.starknet?.provider?.chainId
+    if (constants.StarknetChainId.SN_MAIN === chainId) {
       return "mainnet-alpha"
-    } else if (constants.StarknetChainId.TESTNET === chainId) {
+    } else if (constants.StarknetChainId.SN_GOERLI === chainId) {
       return "goerli-alpha"
-    } else if (constants.StarknetChainId.TESTNET2 === chainId) {
+    } else if (constants.StarknetChainId.SN_GOERLI2 === chainId) {
       return "goerli-alpha2"
     }
     else {
@@ -61,6 +84,7 @@ export const signMessage = async (message: string) => {
     throw Error("message must be a short string")
   }
 
+  message = hash.starknetKeccak(message).toString(16).substring(0, 31);
   return starknet.account.signMessage({
     domain: {
       name: "Example DApp",

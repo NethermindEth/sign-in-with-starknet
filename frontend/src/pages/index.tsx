@@ -2,7 +2,7 @@ import type { NextPage } from "next"
 import Head from "next/head"
 import { useEffect, useState } from "react"
 
-import { TokenDapp } from "../components/TokenDapp"
+import { SignInDapp } from "../components/SignInDapp"
 import { truncateAddress } from "../services/address.service"
 import {
   addWalletChangeListener,
@@ -59,7 +59,7 @@ const Home: NextPage = () => {
             <h3 style={{ margin: 0 }}>
               Url: <code>{networkUrl()}</code>
             </h3>
-            <TokenDapp />
+            <SignInDapp />
           </>
         ) : (
           <>

@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES2020" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "module": "ES2015",
+    "target": "es2015" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     "lib": [
-      "ES2020",
+      "es2015",
       "es7",
       "es6",
       "dom"
@@ -12,8 +12,18 @@
     "outDir": "./dist",
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "importHelpers": true,
     "types": ["node"],
+    "moduleResolution": "node",
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "include": ["lib/*"]
+  "include": [ "src/*",
+     "src",
+  "src/**/*.ts",
+  "@types/**/*.d.ts",
+],
+"exclude": [
+  "node_modules",
+]
+
 }
