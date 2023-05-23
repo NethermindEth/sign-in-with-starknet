@@ -3,6 +3,7 @@
 #Build the lib first
 ```shell
 cd siws_lib
+npm install
 npm run build
 ```
 
