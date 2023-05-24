@@ -1,0 +1,80 @@
+name: Run Benchmarks 
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Remove old files 
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+          script: |
+            rm -rf ${{ secrets.PATH }}/* 
+            if [ -f "async_commands_pids.txt" ]; then
+              echo "Terminating previous async commands..."
+              while read pid; do
+                echo "Killing process $pid"
+                kill $pid || true
+              done < async_commands_pids.txt
+              rm async_commands_pids.txt
+            else
+              echo "No previous async commands found."
+            fi
+      
+      - name: Copy repository contents via scp
+        uses: appleboy/scp-action@master
+        with:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+          source: "."
+          target: ${{ secrets.PATH }}
+
+      - name: Build the lib 
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+          script: cd ${{ secrets.PATH }} && cd siws_lib && npm run build
+ 
+      - name: Deploy backend 
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+          script: |
+            cd ${{ secrets.PATH }} 
+            cd backend
+            npm install  
+            command1="npm run start"
+            $command1 &
+            echo $! >> ~/async_commands_pids.txt 
+      
+      - name: Deploy frontend
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+          script: |
+            cd ${{ secrets.PATH }} 
+            npm install  
+            npm run build 
+            command1="npm run start"
+            $command1 &
+            echo $! >> ~/async_commands_pids.txt 
