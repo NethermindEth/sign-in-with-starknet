@@ -5,7 +5,7 @@
 
   "license": "MIT",
   "scripts": {
-    "start": "tsdx build && node --experimental-specifier-resolution=node  ./dist/index",
+    "start": "tsdx build && node  ./dist/index",
     "clean": "rm -fr node_modules dist && rm -f package-lock.json && npm install"
   },
   "dependencies": {
