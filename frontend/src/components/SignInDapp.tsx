@@ -12,7 +12,7 @@ import {
 import styles from "../styles/Home.module.css"
 
 export const SignInDapp: FC = () => {
-  const [shortText, setShortText] = useState("")
+  const [shortText, setShortText] = useState("Please sign in")
   const [lastSig, setLastSig] = useState<string[]>([])
   const [lastMessage, setLastMessage] = useState<string>()
 
@@ -53,13 +53,14 @@ export const SignInDapp: FC = () => {
         <form onSubmit={handleSignSubmit}>
           <h2 className={styles.title}>Sign</h2>
 
-          <label htmlFor="Short-Text">Short Text</label>
+          <label htmlFor="Short-Text">Short Text(limited to 21 ascii characters)</label>
           <input
             type="text"
             id="short-text"
             name="short-text"
             value={shortText}
             onChange={(e) => setShortText(e.target.value)}
+            placeholder={shortText}
           />
 
           <input type="submit" value="Sign" />

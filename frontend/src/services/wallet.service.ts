@@ -96,13 +96,57 @@ export const signMessage = async (message: string) => {
   // checks that enable succeeded
   if (starknet.isConnected === false)
     throw Error("starknet wallet not connected")
+  
+  let siws = new SiwsMessage(message);
   // if (!shortString.isShortString(message)) {
   //   throw Error("message must be a short string" + message)
   // }
 
-  message = hash.starknetKeccak(message).toString(16).substring(0, 31);
-  console.log("message to sign: " + message)
+  // message = hash.starknetKeccak(message).toString(16).substring(0, 31);
+  // console.log("message to sign: " + message)
+  // { name: "id", type: "felt" },
+  // { name: "from", type: "felt" },
+  // { name: "amount", type: "felt" },
+  // { name: "nameGamer", type: "string" },
+  // { name: "endDate", type: "felt" },
 
+
+
+  // domain: string;
+  // /** Starknet address performing the signing */
+  // address: string;
+  // /** Human-readable ASCII assertion that the user will sign, and it must not contain newline characters. */
+  // statement?: string;
+  // /** RFC 3986 URI referring to the resource that is the subject of the signing
+  //  *  (as in the __subject__ of a claim). */
+  // uri: string;
+  // /** Current version of the message. */
+  // version: string;
+  // /** Chain ID to which the session is bound, and the network where
+  //  * Contract Accounts must be resolved. */
+  // chainId?: number;
+  // /** Randomized token used to prevent replay attacks, at least 8 alphanumeric
+  //  * characters. */
+  // nonce: string;
+  // /** ISO 8601 datetime string of the current time. */
+  // issuedAt: string;
+
+
+
+  /** ISO 8601 datetime string that, if present, indicates when the signed
+   * authentication message is no longer valid. */
+ // expirationTime?: string;
+  /** ISO 8601 datetime string that, if present, indicates when the signed
+   * authentication message will become valid. */
+  //notBefore?: string;
+  /** System-specific identifier that may be used to uniquely refer to the
+   * sign-in request. */
+//  requestId?: string;
+  /** List of information or references to information the user wishes to have
+   * resolved as part of authentication by the relying party. They are
+   * expressed as RFC 3986 URIs separated by `\n- `. */
+//  resources?: Array<string>;
+  console.log("siws json", siws.toJSON());
   const typedMessage = {
     types: {
       StarkNetDomain: [
@@ -111,7 +155,32 @@ export const signMessage = async (message: string) => {
         { name: "version", type: "felt" },
       ],
       Message: [
-        { name: "message", type: "felt" }
+  // domain: string;
+  // /** Starknet address performing the signing */
+  // address: string;
+  // /** Human-readable ASCII assertion that the user will sign, and it must not contain newline characters. */
+  // statement?: string;
+  // /** RFC 3986 URI referring to the resource that is the subject of the signing
+  //  *  (as in the __subject__ of a claim). */
+  // uri: string;
+  // /** Current version of the message. */
+  // version: string;
+  // /** Chain ID to which the session is bound, and the network where
+  //  * Contract Accounts must be resolved. */
+  // chainId?: number;
+  // /** Randomized token used to prevent replay attacks, at least 8 alphanumeric
+  //  * characters. */
+  // nonce: string;
+  // /** ISO 8601 datetime string of the current time. */
+  // issuedAt: string;
+  { name: "domain", type: "string" },
+  { name: "address", type: "felt" },
+  { name: "statement", type: "string" },
+  { name: "uri", type: "string" },
+  { name: "version", type: "string" },
+  { name: "chainId", type: "string" }, // not sure string or number
+  { name: "nonce", type: "string" },
+  { name: "issuedAt", type: "string" },
       ],
     },
     primaryType: "Message",
@@ -120,10 +189,20 @@ export const signMessage = async (message: string) => {
       chainId: /*networkId() === "mainnet-alpha" ? "SN_MAIN" :*/ "SN_GOERLI",
       version: "0.0.1",
     },
-    message: {
-      message,
-    },
-  }
+    message:  siws.toJSON(),
+    // {
+      // domain: "0x0000004f000f",
+      // address: "0x2c94f628d125cd0e86eaefea735ba24c262b9a441728f63e5776661829a4066",
+      // statement: "400",
+      // uri: "Hector26",
+      // version: "0x27d32a3033df4277caa9e9396100b7ca8c66a4ef8ea5f6765b91a7c17f0109c",
+      // chainId: "0x27d32a3033df4277caa9e9396100b7ca8c66a4ef8ea5f6765b91a7c17f0109c",
+      // nonce: "0x27d32a3033df4277caa9e9396100b7ca8c66a4ef8ea5f6765b91a7c17f0109c",
+      // issuedAt: "0x27d32a3033df4277caa9e9396100b7ca8c66a4ef8ea5f6765b91a7c17f0109c",
+  // }
+    };
+  
+  console.log("typedMessage: " ,typedMessage)
 
   const signature = await starknet.account.signMessage(typedMessage)
   console.log("signature: " ,signature)

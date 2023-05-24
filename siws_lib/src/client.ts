@@ -13,7 +13,7 @@ import TypedData = typedData.TypedData;
 import getMessageHash = typedData.getMessageHash;
 import BigNumberish = num.BigNumberish;
 
-export class SiwsMessage {
+export class SiwsMessage  {
   
   // header: Header;
 
@@ -49,20 +49,20 @@ export class SiwsMessage {
 
   /** ISO 8601 datetime string that, if present, indicates when the signed
    * authentication message is no longer valid. */
-  expirationTime?: string;
+//  expirationTime?: string;
 
   /** ISO 8601 datetime string that, if present, indicates when the signed
    * authentication message will become valid. */
-  notBefore?: string;
+//  notBefore?: string;
 
   /** System-specific identifier that may be used to uniquely refer to the
    * sign-in request. */
-  requestId?: string;
+//  requestId?: string;
 
   /** List of information or references to information the user wishes to have
    * resolved as part of authentication by the relying party. They are
    * expressed as RFC 3986 URIs separated by `\n- `. */
-  resources?: Array<string>;
+//  resources?: Array<string>;
 
   /**
    * Creates a parsed Sign-In with Starknet Message object from a
@@ -70,6 +70,28 @@ export class SiwsMessage {
    * validate the parameter, otherwise the fields are attributed.
    * @param param {string | SiwsMessage} Sign message as a string or an object.
    */
+
+  toJSON(){
+    // { name: "domain", type: "string" },
+    // { name: "address", type: "felt" },
+    // { name: "statement", type: "string" },
+    // { name: "uri", type: "string" },
+    // { name: "version", type: "string" },
+    // { name: "chainId", type: "string" }, // not sure string or number
+    // { name: "nonce", type: "string" },
+    // { name: "issuedAt", type: "string" },
+      return {
+        domain: this.domain,
+        address: this.address,
+        statement: this.statement,
+        uri: this.uri,
+        version: this.version,
+        chainId: this.chainId,
+        nonce: this.nonce,
+        issuedAt: this.issuedAt,
+    }
+  }
+
   constructor(param: string | Partial<SiwsMessage>) {
     if (typeof param === "string") {
       const parsedMessage = new ParsedMessage(param);
@@ -80,11 +102,11 @@ export class SiwsMessage {
       this.version = parsedMessage.version;
       this.nonce = parsedMessage.nonce;
       this.issuedAt = parsedMessage.issuedAt;
-      this.expirationTime = parsedMessage.expirationTime;
-      this.notBefore = parsedMessage.notBefore;
-      this.requestId = parsedMessage.requestId;
+      // this.expirationTime = parsedMessage.expirationTime;
+      // this.notBefore = parsedMessage.notBefore;
+      // this.requestId = parsedMessage.requestId;
       this.chainId = parsedMessage.chainId;
-      this.resources = parsedMessage.resources;
+      // this.resources = parsedMessage.resources;
     } else {
       Object.assign(this, param);
       if (typeof this.chainId === "string") {
@@ -126,22 +148,22 @@ export class SiwsMessage {
     }
     suffixArray.push(`Issued At: ${this.issuedAt}`);
 
-    if (this.expirationTime) {
-      const expiryField = `Expiration Time: ${this.expirationTime}`;
-      suffixArray.push(expiryField);
-    }
+    // if (this.expirationTime) {
+    //   const expiryField = `Expiration Time: ${this.expirationTime}`;
+    //   suffixArray.push(expiryField);
+    // }
 
-    if (this.notBefore) {
-      suffixArray.push(`Not Before: ${this.notBefore}`);
-    }
+    // if (this.notBefore) {
+    //   suffixArray.push(`Not Before: ${this.notBefore}`);
+    // }
 
-    if (this.requestId) {
-      suffixArray.push(`Request ID: ${this.requestId}`);
-    }
+    // if (this.requestId) {
+    //   suffixArray.push(`Request ID: ${this.requestId}`);
+    // }
 
-    if (this.resources) {
-      suffixArray.push([`Resources:`, ...this.resources.map((x) => `- ${x}`)].join("\n"));
-    }
+    // if (this.resources) {
+    //   suffixArray.push([`Resources:`, ...this.resources.map((x) => `- ${x}`)].join("\n"));
+    // }
 
     const suffix = suffixArray.join("\n");
     prefix = [prefix, this.statement].join("\n\n");
@@ -209,18 +231,18 @@ export class SiwsMessage {
     }
 
     /** `expirationTime` conforms to ISO-8601 */
-    if (this.expirationTime) {
-      if (!ISO8601.test(this.expirationTime)) {
-        throw new Error(ErrorTypes.INVALID_TIME_FORMAT);
-      }
-    }
+    // if (this.expirationTime) {
+    //   if (!ISO8601.test(this.expirationTime)) {
+    //     throw new Error(ErrorTypes.INVALID_TIME_FORMAT);
+    //   }
+    // }
 
-    /** `notBefore` conforms to ISO-8601 */
-    if (this.notBefore) {
-      if (!ISO8601.test(this.notBefore)) {
-        throw new Error(ErrorTypes.INVALID_TIME_FORMAT);
-      }
-    }
+    // /** `notBefore` conforms to ISO-8601 */
+    // if (this.notBefore) {
+    //   if (!ISO8601.test(this.notBefore)) {
+    //     throw new Error(ErrorTypes.INVALID_TIME_FORMAT);
+    //   }
+    // }
   }
 
   public async verifyMessageHash(hash: BigNumberish, signature: string[], provider: Provider): Promise<boolean> {
@@ -270,40 +292,40 @@ export class SiwsMessage {
       const checkTime = new Date();
 
       /** Expiry Checks */
-      if (this.expirationTime) {
-        const expirationDate = new Date(this.expirationTime);
+      // if (this.expirationTime) {
+      //   const expirationDate = new Date(this.expirationTime);
 
-        // Check if the message hasn't expired
-        if (checkTime.getTime() >= expirationDate.getTime()) {
-          resolve({
-            success: false,
-            data: this,
-            error: new SignInWithStarknetError(
-              ErrorTypes.EXPIRED_MESSAGE,
-              `${checkTime.toISOString()} < ${expirationDate.toISOString()}`,
-              `${checkTime.toISOString()} >= ${expirationDate.toISOString()}`
-            ),
-          });
-        }
-      }
+      //   // Check if the message hasn't expired
+      //   if (checkTime.getTime() >= expirationDate.getTime()) {
+      //     resolve({
+      //       success: false,
+      //       data: this,
+      //       error: new SignInWithStarknetError(
+      //         ErrorTypes.EXPIRED_MESSAGE,
+      //         `${checkTime.toISOString()} < ${expirationDate.toISOString()}`,
+      //         `${checkTime.toISOString()} >= ${expirationDate.toISOString()}`
+      //       ),
+      //     });
+      //   }
+      // }
 
-      /** Message is valid already */
-      if (this.notBefore) {
-        const notBefore = new Date(this.notBefore);
-        if (checkTime.getTime() < notBefore.getTime()) {
-          resolve({
-            success: false,
-            data: this,
-            error: new SignInWithStarknetError(
-              ErrorTypes.EXPIRED_MESSAGE,
-              `${checkTime.toISOString()} >= ${notBefore.toISOString()}`,
-              `${checkTime.toISOString()} < ${notBefore.toISOString()}`
-            ),
-          });
-        }
-      }
+      // /** Message is valid already */
+      // if (this.notBefore) {
+      //   const notBefore = new Date(this.notBefore);
+      //   if (checkTime.getTime() < notBefore.getTime()) {
+      //     resolve({
+      //       success: false,
+      //       data: this,
+      //       error: new SignInWithStarknetError(
+      //         ErrorTypes.EXPIRED_MESSAGE,
+      //         `${checkTime.toISOString()} >= ${notBefore.toISOString()}`,
+      //         `${checkTime.toISOString()} < ${notBefore.toISOString()}`
+      //       ),
+      //     });
+      //   }
+      // }
 
-      const message = hash.starknetKeccak(this.prepareMessage()).toString(16).substring(0, 31);
+      // const message = hash.starknetKeccak(this.prepareMessage()).toString(16).substring(0, 31);
       const typedMessage = {
         domain: {
           name: "Example DApp",
@@ -319,9 +341,7 @@ export class SiwsMessage {
           Message: [{ name: "message", type: "felt" }],
         },
         primaryType: "Message",
-        message: {
-          message,
-        },
+        message: this.toJSON(),
       };
 
       this.verifyMessage(typedMessage, signature, opts.provider)

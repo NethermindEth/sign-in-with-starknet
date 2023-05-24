@@ -70,7 +70,7 @@ app.post('/verify', async function (req: Request, res: Response) {
         }
         
         (req['session'] as any).siws = message;
-        req['session'].cookie.expires = new Date(message.expirationTime);
+        // req['session'].cookie.expires = new Date(message.expirationTime);
         req['session'].save(() => res['status'](200).send(true));
     } catch (e) {
         (req['session'] as any).siws = null;
