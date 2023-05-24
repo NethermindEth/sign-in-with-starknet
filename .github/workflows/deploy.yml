@@ -47,7 +47,7 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PORT: ${{ secrets.PORT }}
           KEY: ${{ secrets.SSHKEY }}
-          script: cd ${{ secrets.PATH }} && cd siws_lib && npm run build
+          script: cd ${{ secrets.PATH }} && cd siws_lib && npm install && npm run build
  
       - name: Deploy backend 
         uses: appleboy/ssh-action@master
