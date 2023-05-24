@@ -1,4 +1,4 @@
-name: Run Benchmarks 
+name: Deploy to Server 
 
 on:
   push:
