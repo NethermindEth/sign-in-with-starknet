@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "tsdx build && node --experimental-specifier-resolution=node  ./dist/index",
-    "clean": "rm -fr node_modules dist"
+    "clean": "rm -fr node_modules dist && rm -f package-lock.json && npm install"
   },
   "dependencies": {
     "@stablelib/random": "^1.0.2",
@@ -15,7 +15,7 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "npm-check-updates": "^16.10.12",
-    "siws_lib": "^2.1.8",
+    "siws_lib": "file:../siws_lib",
     "starknet": "^v5.10",
     "ts-node": "^10.9.1"
   },

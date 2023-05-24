@@ -226,17 +226,10 @@ export class SiwsMessage {
   public async verifyMessageHash(hash: BigNumberish, signature: string[], provider: Provider): Promise<boolean> {
     try {
       const accountContract = new Contract(abiAccountContract, this.address, provider);
-
-      await accountContract.callContract({
-        contractAddress: this.address,
-        entrypoint: 'isValidSignature',
-        calldata: CallData.compile({
-          hash: num.toBigInt(hash).toString(),
-          signature: stark.formatSignature(signature),
-        }),
-      });
+      await accountContract.call("isValidSignature", [hash, signature]);
       return true;
-    } catch {
+    } catch (e){
+      console.log(e);
       return false;
     }
   }
@@ -314,7 +307,7 @@ export class SiwsMessage {
       const typedMessage = {
         domain: {
           name: "Example DApp",
-          chainId: network === "mainnet-alpha" ? "SN_MAIN" : "SN_GOERLI",
+          chainId: /*network === "mainnet-alpha" ? "SN_MAIN" :*/ "SN_GOERLI",
           version: "0.0.1",
         },
         types: {
@@ -331,7 +324,7 @@ export class SiwsMessage {
         },
       };
 
-      this.verifyMessage(typedMessage, signature.s, opts.provider)
+      this.verifyMessage(typedMessage, signature, opts.provider)
       .then((valid) => {
         if (!valid)
           return reject({

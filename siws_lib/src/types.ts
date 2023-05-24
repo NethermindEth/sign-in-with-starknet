@@ -126,7 +126,7 @@ export class SignInWithStarknetError extends Error {
 
 export interface VerifyParams {
   // payload: Payload;
-  signature: Signature;
+  signature: string[];
   network?: string;
   // kp: KeyPair | StarknetWindowObject;
 

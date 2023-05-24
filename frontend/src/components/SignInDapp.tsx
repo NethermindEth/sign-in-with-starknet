@@ -7,31 +7,45 @@ import {
   signMessage,
   createSiwsMessage,
   waitForTransaction,
+  verifySignInMessage,
 } from "../services/wallet.service"
 import styles from "../styles/Home.module.css"
 
 export const SignInDapp: FC = () => {
   const [shortText, setShortText] = useState("")
   const [lastSig, setLastSig] = useState<string[]>([])
-  const [lastMessage, setLastMessage] = useState<string[]>([])
+  const [lastMessage, setLastMessage] = useState<string>()
+
+  const [signedIn, setSignedIn] = useState(false)
 
   const network = networkId()
 
   const handleSignSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault()
-      // setTransactionStatus("approve")
+      // setTransactionStatus("approve")  
       console.log("sign", shortText)
       let siwsMessageString = await createSiwsMessage(shortText);
       const result = await signMessage(siwsMessageString);
 
       setLastSig(result)
-      // setTransactionStatus("success")
+      setLastMessage(siwsMessageString)
     } catch (e) {
       console.error(e)
-      // setTransactionStatus("idle")
     }
   }
+
+  const handleVerifySubmit = async (e: React.FormEvent) => {
+    try {
+      e.preventDefault()
+      const verified = await verifySignInMessage(lastMessage, lastSig)
+      setSignedIn(verified)
+    } catch (e) {
+      console.error(e)
+      setSignedIn(false)
+    }
+  }
+
 
   return (
     <>
@@ -74,22 +88,15 @@ export const SignInDapp: FC = () => {
         </form>
 
       </div>
-      <form>
+      <form onSubmit={handleVerifySubmit}>
           <h2 className={styles.title}>Verify and Sign In</h2>
 
           {/* Label and textarea for value r */}
           <label htmlFor="Verify and Sign In">Verify and Sign In</label>
-          <textarea
-            className={styles.textarea}
-            id="verify"
-            name="verify"
-            value={lastSig[0]}
-            readOnly
-          />
           {/* Label and textarea for value s */}
           <input type="submit" value="Sign In" />
+          {signedIn === true ? (<label htmlFor="Verified" style={{color: 'green'}}>Signed IN!!</label> ): (<label htmlFor="Verified" style={{color: 'red'}}>Not Signed IN!!</label> )}
         </form>
-
     </>
   )
 }

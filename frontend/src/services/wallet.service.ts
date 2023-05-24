@@ -1,6 +1,9 @@
 import { connect, disconnect, StarknetWindowObject } from "get-starknet"
-import { shortString, constants, hash} from "starknet"
+import { shortString, constants, hash, typedData, Account, CallData, stark, num, Provider, Contract} from "starknet"
 import { SiwsMessage } from "siws_lib/dist"
+import abiAccountContract from "siws_lib/src/accountClassAbi.json";
+
+const BACKEND_ADDR = "http://localhost:3001";
 
 
 export const isWalletConnected = (): boolean => {
@@ -20,9 +23,6 @@ export const walletAddress = async (): Promise<string | undefined> => {
   } catch { }
 }
 
-const BACKEND_ADDR = "http://localhost:3001";
-
-
 export async function createSiwsMessage(statement:string) {
     const domain = window.location.host;
     const origin = window.location.origin;
@@ -31,16 +31,33 @@ export async function createSiwsMessage(statement:string) {
     });
     const responseNonce = await res.text()
     const address= await walletAddress();
+    console.log("chain id", parseInt(window.starknet?.provider?.chainId.toString()));
     const message = new SiwsMessage({
         domain,
         address,
         statement,
         uri: origin,
         version: '1',
-        chainId: parseInt( window.starknet?.provider?.chainId),
+        chainId: 3/*parseInt( window.starknet?.provider?.chainId.toString())*/,
         nonce: responseNonce
     });
     return message.prepareMessage();
+}
+
+export async function verifySignInMessage(message:string, signature:string[]) {
+  const starknet = window.starknet as StarknetWindowObject
+  await starknet.enable()
+
+  const res = await fetch(`${BACKEND_ADDR}/verify`, {
+    method: "POST",
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message, signature }),
+    credentials: 'include'
+  });
+  const result = await res.text();
+  return Boolean(JSON.parse(result));
 }
 
 export const networkId = (): string | undefined => {
@@ -58,7 +75,6 @@ export const networkId = (): string | undefined => {
     }
   } catch { }
 }
-
 
 export const getExplorerBaseUrl = (): string | undefined => {
   if (networkId() === "mainnet-alpha") {
@@ -87,25 +103,31 @@ export const signMessage = async (message: string) => {
   message = hash.starknetKeccak(message).toString(16).substring(0, 31);
   console.log("message to sign: " + message)
 
-  return starknet.account.signMessage({
-    domain: {
-      name: "Example DApp",
-      chainId: networkId() === "mainnet-alpha" ? "SN_MAIN" : "SN_GOERLI",
-      version: "0.0.1",
-    },
+  const typedMessage = {
     types: {
       StarkNetDomain: [
         { name: "name", type: "felt" },
         { name: "chainId", type: "felt" },
         { name: "version", type: "felt" },
       ],
-      Message: [{ name: "message", type: "felt" }],
+      Message: [
+        { name: "message", type: "felt" }
+      ],
     },
     primaryType: "Message",
+    domain: {
+      name: "Example DApp",
+      chainId: /*networkId() === "mainnet-alpha" ? "SN_MAIN" :*/ "SN_GOERLI",
+      version: "0.0.1",
+    },
     message: {
       message,
     },
-  })
+  }
+
+  const signature = await starknet.account.signMessage(typedMessage)
+  console.log("signature: " ,signature)
+  return signature
 }
 
 export const waitForTransaction = async (hash: string) =>
