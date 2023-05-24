@@ -73,6 +73,7 @@ jobs:
           KEY: ${{ secrets.SSHKEY }}
           script: |
             cd ${{ secrets.PATH }} 
+            cd frontend
             npm install  
             npm run build 
             command1="npm run start"
