@@ -48,15 +48,25 @@ jobs:
       - name: Use Node.js 20
         uses: actions/setup-node@v3
         with:
-          node-version: 20.x    
+          node-version: 20.2.0    
 
       - name: Setup Node.js environment 
-        run: |
-          export NVM_DIR=~/.nvm
-          nvm install 20.2.0  # install the version of Node.js you need
-          nvm use 20.2.0      # use it
-          npm --help
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.2.0'
           
+      - name: Install NVM
+        run: |
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+          
+      - name: Setup Node.js environment 
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm install 20.2.0
+          nvm use 20.2.0
+          npm --help          
+
       - name: Build the lib 
         uses: appleboy/ssh-action@master
         with:
