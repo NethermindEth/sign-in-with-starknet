@@ -86,6 +86,8 @@ jobs:
           script: |
             cd ${{ secrets.PATH }} 
             cd backend
+            nvm install 20.2.0
+            nvm use 20.2.0
             npm install  
             command1="npm run start"
             $command1 &
