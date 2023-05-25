@@ -39,7 +39,12 @@ jobs:
           KEY: ${{ secrets.SSHKEY }}
           source: "."
           target: ${{ secrets.PATH }}
-
+          
+      - name: Setup Node.js environment 
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.2.0'
+          
       - name: Build the lib 
         uses: appleboy/ssh-action@master
         with:
