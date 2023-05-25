@@ -57,7 +57,7 @@ jobs:
           REMOTE_USER: ${{ secrets.USERNAME }}
           PROJECT_PATH: ${{ secrets.PATH }}
         run: |
-          ssh $REMOTE_USER@$REMOTE_HOST "node -v"          
+          ssh $REMOTE_USER@$REMOTE_HOST "source ~/.nvm/nvm.sh && nvm use && node -v"          
 
       - name: Build the lib 
         uses: appleboy/ssh-action@master
