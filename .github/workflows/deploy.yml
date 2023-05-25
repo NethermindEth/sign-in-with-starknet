@@ -70,7 +70,6 @@ jobs:
               cd $PROJECT_PATH &&
               cd backend &&
               npm install &&
-              npm run build && 
               command1="npm run start" &&
               $command1 & 
               echo $! >> ~/async_commands_pids.txt
