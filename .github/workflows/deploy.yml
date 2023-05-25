@@ -44,14 +44,13 @@ jobs:
 
       - name: Build the lib 
         uses: appleboy/ssh-action@master
-        env:
-          PROJECT_PATH: ${{ secrets.PATH }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSHKEY }}
           script: |
+            export PROJECT_PATH=${{ secrets.PATH }}
             bash -c 'cd $PROJECT_PATH && \
                cd siws_lib && \
                node -v && \
@@ -60,14 +59,13 @@ jobs:
  
       - name: Deploy backend 
         uses: appleboy/ssh-action@master
-        env:
-          PROJECT_PATH: ${{ secrets.PATH }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSHKEY }}
           script: |
+            export PROJECT_PATH=${{ secrets.PATH }}
             bash -c '
               cd $PROJECT_PATH &&
               cd backend &&
@@ -80,14 +78,13 @@ jobs:
       
       - name: Deploy frontend
         uses: appleboy/ssh-action@master
-        env:
-          PROJECT_PATH: ${{ secrets.PATH }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSHKEY }}
           script: |
+            export PROJECT_PATH=${{ secrets.PATH }}
             bash -c '
               cd $PROJECT_PATH &&
               cd frontend &&
