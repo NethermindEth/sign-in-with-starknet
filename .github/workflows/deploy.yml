@@ -41,24 +41,23 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           source: "."
           target: ${{ secrets.PATH }}
+
+      - name: Install SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSHKEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
           
       - name: Check Node.js version
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          port: ${{ secrets.PORT }}
-          key: ${{ secrets.SSHKEY }}
-          script: |
-            node -v          
-      - name: Print node version 
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          port: ${{ secrets.PORT }}
-          key: ${{ secrets.SSHKEY }}
-          script: whoami 
+        env:
+          REMOTE_HOST: ${{ secrets.HOST }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          PROJECT_PATH: ${{ secrets.PATH }}
+        run: |
+          ssh $REMOTE_USER@$REMOTE_HOST "node -v"          
 
       - name: Build the lib 
         uses: appleboy/ssh-action@master
