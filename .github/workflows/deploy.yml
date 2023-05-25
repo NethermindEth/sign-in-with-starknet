@@ -53,7 +53,6 @@ jobs:
       - name: Setup Node.js environment 
         run: |
           export NVM_DIR=~/.nvm
-          source ~/.nvm/nvm.sh
           nvm install 20.2.0  # install the version of Node.js you need
           nvm use 20.2.0      # use it
           npm --help
