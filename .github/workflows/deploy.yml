@@ -72,7 +72,7 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PORT: ${{ secrets.PORT }}
           KEY: ${{ secrets.SSHKEY }}
-          script: node -v 
+          script: whoami 
 
       - name: Build the lib 
         uses: appleboy/ssh-action@master
