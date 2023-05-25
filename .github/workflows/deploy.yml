@@ -40,10 +40,11 @@ jobs:
           source: "."
           target: ${{ secrets.PATH }}
           
-      - name: Setup Node.js environment 
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - name: Use Node.js 20
+        uses: actions/setup-node@v3
         with:
-          node-version: '20.2.0'
+          node-version: 20.x    
           
       - name: Build the lib 
         uses: appleboy/ssh-action@master
