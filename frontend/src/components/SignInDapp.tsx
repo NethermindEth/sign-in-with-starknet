@@ -53,7 +53,7 @@ export const SignInDapp: FC = () => {
         <form onSubmit={handleSignSubmit}>
           <h2 className={styles.title}>Sign</h2>
 
-          <label htmlFor="Short-Text">Short Text(limited to 21 ascii characters)</label>
+          <label htmlFor="Short-Text">Short Text(limited to 31 ascii characters)</label>
           <input
             type="text"
             id="short-text"
