@@ -46,13 +46,17 @@ jobs:
 #         run: |
 #           curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
           
-#       - name: Setup Node.js environment 
-#         run: |
-#           export NVM_DIR="$HOME/.nvm"
-#           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-#           nvm install 20.2.0
-#           nvm use 20.2.0
-#           npm --help          
+      - name: Setup Node.js environment 
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+          script: |
+            nvm install 20.2.0
+            nvm alias default 20.2.0
+            node -v          
       - name: Print node version 
         uses: appleboy/ssh-action@master
         with:
