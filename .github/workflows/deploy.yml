@@ -5,8 +5,6 @@ on:
     branches:
       - main
       
-
-  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,17 +42,6 @@ jobs:
           source: "."
           target: ${{ secrets.PATH }}
           
-      - uses: actions/checkout@v3
-      - name: Use Node.js 20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.2.0    
-
-      - name: Setup Node.js environment 
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20.2.0'
-          
 #       - name: Install NVM
 #         run: |
 #           curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
@@ -66,6 +53,14 @@ jobs:
 #           nvm install 20.2.0
 #           nvm use 20.2.0
 #           npm --help          
+      - name: Print node version 
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+          script: node -v 
 
       - name: Build the lib 
         uses: appleboy/ssh-action@master
