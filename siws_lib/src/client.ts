@@ -92,6 +92,46 @@ export class SiwsMessage  {
     }
   }
 
+  typedMessageSchema() {
+    return [
+      { name: "domain", type: "string" },
+      { name: "address", type: "felt" },
+      { name: "statement", type: "string" },
+      { name: "uri", type: "string" },
+      { name: "version", type: "string" },
+      { name: "chainId", type: "string" }, // not sure string or number
+      { name: "nonce", type: "string" },
+      { name: "issuedAt", type: "string" },
+          ];
+  }
+
+  starknetDomainSchema() {
+    return [
+      { name: "name", type: "felt" },
+      { name: "chainId", type: "felt" },
+      { name: "version", type: "felt" },
+    ]
+  }
+
+  domainJSON() {
+    return {name: "Example DApp",
+            chainId: /*network === "mainnet-alpha" ? "SN_MAIN" :*/ "SN_GOERLI",
+            version: "0.0.1"}
+  }
+
+  prepareMessage712StyleTyped() {
+    const typedMessage = {
+      domain: this.domainJSON(),
+      message: this.toJSON(),
+      primaryType: "Message",
+      types: {
+        StarkNetDomain: this.starknetDomainSchema(),
+        Message: this.typedMessageSchema(),
+      },
+    };
+    return typedMessage;
+  }
+
   constructor(param: string | Partial<SiwsMessage>) {
     if (typeof param === "string") {
       const parsedMessage = new ParsedMessage(param);
@@ -326,25 +366,8 @@ export class SiwsMessage  {
       // }
 
       // const message = hash.starknetKeccak(this.prepareMessage()).toString(16).substring(0, 31);
-      const typedMessage = {
-        domain: {
-          name: "Example DApp",
-          chainId: /*network === "mainnet-alpha" ? "SN_MAIN" :*/ "SN_GOERLI",
-          version: "0.0.1",
-        },
-        types: {
-          StarkNetDomain: [
-            { name: "name", type: "felt" },
-            { name: "chainId", type: "felt" },
-            { name: "version", type: "felt" },
-          ],
-          Message: [{ name: "message", type: "felt" }],
-        },
-        primaryType: "Message",
-        message: this.toJSON(),
-      };
 
-      this.verifyMessage(typedMessage, signature, opts.provider)
+      this.verifyMessage(this.prepareMessage712StyleTyped(), signature, opts.provider)
       .then((valid) => {
         if (!valid)
           return reject({

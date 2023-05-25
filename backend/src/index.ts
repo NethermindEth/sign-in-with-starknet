@@ -16,7 +16,7 @@ const provider =  new starknet.Provider({
   
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000','https://localhost:3000', 'http://localhost:3001', 'https://localhost:3001', 'http://143.42.2.9:3000','https://143.42.2.9:3000'],
     credentials: true,
 }))
 

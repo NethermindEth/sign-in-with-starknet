@@ -147,62 +147,8 @@ export const signMessage = async (message: string) => {
    * expressed as RFC 3986 URIs separated by `\n- `. */
 //  resources?: Array<string>;
   console.log("siws json", siws.toJSON());
-  const typedMessage = {
-    types: {
-      StarkNetDomain: [
-        { name: "name", type: "felt" },
-        { name: "chainId", type: "felt" },
-        { name: "version", type: "felt" },
-      ],
-      Message: [
-  // domain: string;
-  // /** Starknet address performing the signing */
-  // address: string;
-  // /** Human-readable ASCII assertion that the user will sign, and it must not contain newline characters. */
-  // statement?: string;
-  // /** RFC 3986 URI referring to the resource that is the subject of the signing
-  //  *  (as in the __subject__ of a claim). */
-  // uri: string;
-  // /** Current version of the message. */
-  // version: string;
-  // /** Chain ID to which the session is bound, and the network where
-  //  * Contract Accounts must be resolved. */
-  // chainId?: number;
-  // /** Randomized token used to prevent replay attacks, at least 8 alphanumeric
-  //  * characters. */
-  // nonce: string;
-  // /** ISO 8601 datetime string of the current time. */
-  // issuedAt: string;
-  { name: "domain", type: "string" },
-  { name: "address", type: "felt" },
-  { name: "statement", type: "string" },
-  { name: "uri", type: "string" },
-  { name: "version", type: "string" },
-  { name: "chainId", type: "string" }, // not sure string or number
-  { name: "nonce", type: "string" },
-  { name: "issuedAt", type: "string" },
-      ],
-    },
-    primaryType: "Message",
-    domain: {
-      name: "Example DApp",
-      chainId: /*networkId() === "mainnet-alpha" ? "SN_MAIN" :*/ "SN_GOERLI",
-      version: "0.0.1",
-    },
-    message:  siws.toJSON(),
-    // {
-      // domain: "0x0000004f000f",
-      // address: "0x2c94f628d125cd0e86eaefea735ba24c262b9a441728f63e5776661829a4066",
-      // statement: "400",
-      // uri: "Hector26",
-      // version: "0x27d32a3033df4277caa9e9396100b7ca8c66a4ef8ea5f6765b91a7c17f0109c",
-      // chainId: "0x27d32a3033df4277caa9e9396100b7ca8c66a4ef8ea5f6765b91a7c17f0109c",
-      // nonce: "0x27d32a3033df4277caa9e9396100b7ca8c66a4ef8ea5f6765b91a7c17f0109c",
-      // issuedAt: "0x27d32a3033df4277caa9e9396100b7ca8c66a4ef8ea5f6765b91a7c17f0109c",
-  // }
-    };
-  
-  console.log("typedMessage: " ,typedMessage)
+  const typedMessage = siws.prepareMessage712StyleTyped();
+  console.log("typedMessage: " ,siws.prepareMessage712StyleTyped());
 
   const signature = await starknet.account.signMessage(typedMessage)
   console.log("signature: " ,signature)
