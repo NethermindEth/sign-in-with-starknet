@@ -42,14 +42,6 @@ jobs:
           source: "."
           target: ${{ secrets.PATH }}
 
-      - name: Check Node.js version
-        env:
-          REMOTE_HOST: ${{ secrets.HOST }}
-          REMOTE_USER: ${{ secrets.USERNAME }}
-          PROJECT_PATH: ${{ secrets.PATH }}
-        run: |
-          ssh $REMOTE_USER@$REMOTE_HOST "bash -ic 'source ~/.bashrc && node -v'"          
-
       - name: Build the lib 
         uses: appleboy/ssh-action@master
         env:
@@ -62,6 +54,7 @@ jobs:
           script: |
             bash -c 'cd $PROJECT_PATH && \
                cd siws_lib && \
+               node -v && \
                npm install && \
                npm run build' 
  
