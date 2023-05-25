@@ -72,7 +72,7 @@ jobs:
               npm install &&
               npm run build && 
               command1="npm run start" &&
-              $command1 & &&
+              $command1 & 
               echo $! >> ~/async_commands_pids.txt
             '
       
