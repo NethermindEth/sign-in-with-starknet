@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - main
+      
+
+  
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+        
       - uses: actions/checkout@v1
 
       - name: Remove old files 
@@ -45,6 +49,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20.x    
+
+      - name: Setup Node.js environment 
+        run: |
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh
+          nvm install 20.2.0  # install the version of Node.js you need
+          nvm use 20.2.0      # use it
+          npm --help
           
       - name: Build the lib 
         uses: appleboy/ssh-action@master
