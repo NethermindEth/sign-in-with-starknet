@@ -2,8 +2,16 @@ import { connect, disconnect, StarknetWindowObject } from "get-starknet"
 import { shortString, constants, hash, typedData, Account, CallData, stark, num, Provider, Contract} from "starknet"
 import { SiwsMessage } from "siws_lib/dist"
 import abiAccountContract from "siws_lib/src/accountClassAbi.json";
+const env = process.env.NODE_ENV
+let BACKEND_ADDR = "";
+if (env == "production"){
+  const BACKEND_ADDR = "http://143.42.2.9:3001";
+}
+else if (env == "development"){
+  const BACKEND_ADDR = "http://localhost:3001";
+}
 
-const BACKEND_ADDR = "http://localhost:3001";
+
 
 
 export const isWalletConnected = (): boolean => {
