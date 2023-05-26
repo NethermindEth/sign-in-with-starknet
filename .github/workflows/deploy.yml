@@ -51,7 +51,8 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           script: |
             export PROJECT_PATH=${{ secrets.PATH }}
-            bash -c 'cd $PROJECT_PATH && \
+            bash -ic 'cd $PROJECT_PATH && \
+               node -v &&
                cd siws_lib && \
                node -v && \
                npm install && \
@@ -66,7 +67,8 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           script: |
             export PROJECT_PATH=${{ secrets.PATH }}
-            bash -c '
+            bash -ic '
+              node -v &&
               cd $PROJECT_PATH &&
               cd backend &&
               npm install &&
@@ -84,7 +86,8 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           script: |
             export PROJECT_PATH=${{ secrets.PATH }}
-            bash -c '
+            bash -ic '
+              node -v &&
               cd $PROJECT_PATH &&
               cd frontend &&
               npm install &&
