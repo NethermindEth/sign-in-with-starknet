@@ -92,7 +92,7 @@ jobs:
               cd frontend &&
               npm install &&
               npm run build &&
-              command1="npm run start"
+              command1="pm2 start npm -- start --watch"
               $command1 &
               echo $! >> ~/async_commands_pids.txt 
             '
