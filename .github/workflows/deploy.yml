@@ -73,9 +73,7 @@ jobs:
               cd backend &&
               npm install &&
               pm2 delete my-backend || true &&
-              pm2 start npm --name "my-backend" -- start --watch
-              & echo $! >> ~/async_commands_pids.txt
-            '
+              pm2 start npm --name "my-backend" -- start --watch'
       
       - name: Deploy frontend
         uses: appleboy/ssh-action@master
@@ -93,6 +91,4 @@ jobs:
               npm install &&
               npm run build &&
               pm2 delete my-frontend || true &&
-              pm2 start npm --name "my-frontend" -- start --watch
-              & echo $! >> ~/async_commands_pids.txt 
-            '
+              pm2 start npm --name "my-frontend" -- start --watch'
