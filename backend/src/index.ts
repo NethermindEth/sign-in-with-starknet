@@ -37,8 +37,6 @@ const generateNonce = () => {
 };
 
 app.get('/nonce', function (req, res) {
-    // res.setHeader('Content-Type', 'text/plain');
-    // res.send(generateNonce());
   
     (req['session'] as any).nonce = generateNonce();
     console.log((req['session'] as any).nonce);
@@ -49,17 +47,16 @@ app.get('/nonce', function (req, res) {
 
 app.post('/verify', async function (req: Request, res: Response) {
     try {
-        console.log(req); 
         if (!req['body'].message) {
             res['status'](422).json({ message: 'Expected prepareMessage object as body.' });
             return;
         }
-        console.log( req['body'].message);
         const message = new SiwsMessage(
             req['body'].message,    
         );
 
-        console.log( 'signature', req['body'].signature);
+        // console.log( req['body'].message);
+        // console.log( 'signature', req['body'].signature);
         
         const isVerified = await message.verify({ signature: req['body'].signature, nonce: (req['session'] as any).nonce }, {provider:provider});
       
