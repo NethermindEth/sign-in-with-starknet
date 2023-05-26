@@ -88,7 +88,7 @@ jobs:
               node -v &&
               cd $PROJECT_PATH &&
               cd frontend &&
+              pm2 delete my-frontend || true &&
               npm install &&
               npm run build &&
-              pm2 delete my-frontend || true &&
               pm2 start npm --name "my-frontend" -- start'
