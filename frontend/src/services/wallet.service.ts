@@ -5,10 +5,10 @@ import abiAccountContract from "siws_lib/src/accountClassAbi.json";
 const env = process.env.NODE_ENV
 let BACKEND_ADDR = "";
 if (env == "production"){
-  const BACKEND_ADDR = "http://143.42.2.9:3001";
+  BACKEND_ADDR = "http://143.42.2.9:3001";
 }
 else if (env == "development"){
-  const BACKEND_ADDR = "http://localhost:3001";
+  BACKEND_ADDR = "http://localhost:3001";
 }
 
 
