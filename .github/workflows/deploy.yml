@@ -72,9 +72,9 @@ jobs:
               cd $PROJECT_PATH &&
               cd backend &&
               npm install &&
-              command1="pm2 start npm -- start --watch" &&
-              $command1 & 
-              echo $! >> ~/async_commands_pids.txt
+              pm2 delete my-backend || true &&
+              pm2 start npm --name "my-backend" -- start --watch
+              & echo $! >> ~/async_commands_pids.txt
             '
       
       - name: Deploy frontend
@@ -92,7 +92,7 @@ jobs:
               cd frontend &&
               npm install &&
               npm run build &&
-              command1="pm2 start npm -- start --watch"
-              $command1 &
-              echo $! >> ~/async_commands_pids.txt 
+              pm2 delete my-frontend || true &&
+              pm2 start npm --name "my-frontend" -- start --watch
+              & echo $! >> ~/async_commands_pids.txt 
             '
