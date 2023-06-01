@@ -44,20 +44,10 @@ interface Props {
 
 const MessageEditor = (props: Props) => {
   const [data, setData] = useState(props.data);
-
-  // const onChangeString = (newValue: string) => {
-  //   try {
-  //     // let jsonObject = json.parse(newValue)
-  //     setData(newValue)
-  //   }
-  //   catch (e) {
-  //     console.log(e)
-  //   }
-  // }
-
   const onSubmitString = (newValue: string) => {
     try {
       // let jsonObject = json.parse(newValue)
+      console.log("newValue", newValue)
       props.onResult(newValue)
     }
     catch (e) {
@@ -66,10 +56,10 @@ const MessageEditor = (props: Props) => {
   }
 
   useEffect(() => {
+    console.log("props.data", props.data)
     setData(props.data)}, [props.data])
 
   
-  console.log("rendering MessageEditor", props.data)
   const editableViewBg = useColorModeValue("gray.100", "gray.900");
   const editableViewBgHover = useColorModeValue("gray.200", "gray.700");
   return (

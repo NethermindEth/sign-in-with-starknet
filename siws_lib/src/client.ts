@@ -307,7 +307,7 @@ export class SiwsMessage  {
 
       /** Domain binding */
       if (domain && domain !== this.domain) {
-        resolve({
+        reject({
           success: false,
           data: this,
           error: new SignInWithStarknetError(ErrorTypes.DOMAIN_MISMATCH, domain, this.domain),
@@ -316,7 +316,7 @@ export class SiwsMessage  {
 
       /** Nonce binding */
       if (nonce && nonce !== this.nonce) {
-        resolve({
+        reject({
           success: false,
           data: this,
           error: new SignInWithStarknetError(ErrorTypes.NONCE_MISMATCH, nonce, this.nonce),
@@ -376,7 +376,7 @@ export class SiwsMessage  {
         });
       })
       .catch(() => {
-        return resolve({
+        return reject({
           success: false,
           data: this,
           error: new SignInWithStarknetError(

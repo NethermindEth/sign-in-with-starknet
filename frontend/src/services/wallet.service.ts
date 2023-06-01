@@ -53,29 +53,22 @@ export async function verifySignInMessage(message:string, signature:string[]) {
   const starknet = window.starknet as StarknetWindowObject
   await starknet.enable()
 
-  try{
-    const res = await fetch(`${BACKEND_ADDR}/verify`, {
-      method: "POST",
-      headers: {
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message, signature }),
-      credentials: 'include'
-    });
-    
-    if (res.status != 200) {
-      throw new Error("Failed to verify message");
-    }
+  const res = await fetch(`${BACKEND_ADDR}/verify`, {
+    method: "POST",
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message, signature }),
+    credentials: 'include'
+  });
 
-    const result = await res.text();
-    console.log("verifySignInMessage result", result);
-    return Boolean(JSON.parse(result));
-  }
-  catch(e){
-    console.log("verifySignInMessage error", e);
-    return false;
+  if (res.status != 200) {
+    const errorJson = await res.json()
+    console.log("error json", errorJson)
+    throw new Error(errorJson);
   }
 
+  return true;
 }
 
 export const networkId = (): string | undefined => {

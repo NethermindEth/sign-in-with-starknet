@@ -89,7 +89,7 @@
 
 .textarea {
   width: 100%;
-  color: white;
+  color: black;
   resize: vertical;
   min-height: 4em;
 }

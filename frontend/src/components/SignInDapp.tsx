@@ -30,20 +30,16 @@ export const SignInDapp: FC = () => {
       return siwsMessageString
     }
     createMessage().then((message) => {
-      console.log("message created", message)
       setLastMessage(message)
+      // test message creation passes the validation
     }).catch((e) => console.error(e))
   },[] )
 
   const handleSignSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault()
-      // setTransactionStatus("approve")  
-      // console.log("sign", shortText)
-      // let siwsMessageString = await createSiwsMessage(shortText);
       const result = await signMessage(lastMessage);
       setLastSig(result)
-      // setLastMessage(siwsMessageString)
     } catch (e) {
       console.error(e)
     }
@@ -57,6 +53,7 @@ export const SignInDapp: FC = () => {
     } catch (e) {
       console.error(e)
       setSignedIn(false)
+      setServerSideMessageError(e.message)
     }
   }
 
@@ -68,14 +65,13 @@ export const SignInDapp: FC = () => {
           data={lastMessage}
           onResult={(message: string) => {
             try{
-              let validatedMessage = new SiwsMessage(message)
               setLastMessage(message)
+              let validatedMessage = (new SiwsMessage(message)).prepareMessage()
               setClientSideMessageError('')
-              console.log("updated", message)
             }
             catch (e){
               console.error(e)
-              setClientSideMessageError(e.message)
+              setClientSideMessageError(e.message + " \n You can try signing in with the message but since there were validation issues you might not be able to sign in.")
             }
           }}
         / >}
@@ -110,7 +106,8 @@ export const SignInDapp: FC = () => {
             id="r"
             name="r"
             value={lastSig[0]}
-            readOnly
+            onChange={(e) => setLastSig([e.target.value, lastSig[1]])}
+
           />
           {/* Label and textarea for value s */}
           <label htmlFor="s">s</label>
@@ -119,13 +116,10 @@ export const SignInDapp: FC = () => {
             id="s"
             name="s"
             value={lastSig[1]}
-            readOnly
+            onChange={(e) => setLastSig([lastSig[0], e.target.value])}
           />
         </form>
       </div>
-
-      {console.log("rendering lastMessage", lastMessage)}
-
 
       <form onSubmit={handleVerifySubmit}>
           <h2 className={styles.title}>Verify and Sign In</h2>
@@ -134,7 +128,7 @@ export const SignInDapp: FC = () => {
           <label htmlFor="Verify and Sign In">Verify and Sign In</label>
           {/* Label and textarea for value s */}
           <input type="submit" value="Sign In" />
-          {signedIn === true ? (<label htmlFor="Verified" style={{color: 'green'}}>Signed IN!!</label> ): (<label htmlFor="Verified" style={{color: 'red'}}>Not Signed IN!!</label> )}
+          {signedIn === true ? (<label htmlFor="Verified" style={{color: 'green'}}>Signed IN!!</label> ): (<label htmlFor="Verified" style={{color: 'red'}}>{serverSideMessageError}</label> )}
         </form>
     </>
   )

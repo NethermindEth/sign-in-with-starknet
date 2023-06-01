@@ -56,37 +56,46 @@ app.post('/verify', async function (req: Request, res: Response) {
             req['body'].message,    
         );
 
-        // console.log( req['body'].message);
-        // console.log( 'signature', req['body'].signature);
+        console.log( req['body'].message);
+        console.log( 'signature', req['body'].signature);
+
+        console.log("req session nonce ", (req['session'] as any).nonce);
+        console.log("siws nonce ", message.nonce);
         
         const isVerified = await message.verify({ signature: req['body'].signature, nonce: (req['session'] as any).nonce }, {provider:starknetProvider});
       
-        if (isVerified.success) {
-            console.log("Verified!");
-        } else {
-            console.log("Not Verified!");
-        }
         
         (req['session'] as any).siws = message;
         // req['session'].cookie.expires = new Date(message.expirationTime);
+        if (isVerified.success) {
+            console.log("Verified!");
+        } else {
+            throw("Not Verified! Something went wrong.");
+        }
         req['session'].save(() => res['status'](200).send(true));
+        
     } catch (e) {
         (req['session'] as any).siws = null;
         (req['session'] as any).nonce = null;
         console.log(e);
-        switch (e.error.type) {
-            case ErrorTypes.EXPIRED_MESSAGE: {
-                req['session'].save(() => res['status'](440).json({ message: e.message }));
-                break;
+        if (e.error instanceof SignInWithStarknetError){
+            switch (e.error ) {
+                case ErrorTypes.EXPIRED_MESSAGE: {
+                    req['session'].save(() => res['status'](440).json({ message: e.message }));
+                    break;
+                }
+                case ErrorTypes.INVALID_SIGNATURE: {
+                    req['session'].save(() => res['status'](422).json({ message: e.message }));
+                    break;
+                }
+                default: {
+                    req['session'].save(() => res['status'](500).json({ message: e.message }));
+                    break;
+                }
             }
-            case ErrorTypes.INVALID_SIGNATURE: {
-                req['session'].save(() => res['status'](422).json({ message: e.message }));
-                break;
-            }
-            default: {
-                req['session'].save(() => res['status'](500).json({ message: e.message }));
-                break;
-            }
+        }
+        else {
+            req['session'].save(() => res['status'](500).json({ message: e.message }));
         }
     }
 });
