@@ -15,18 +15,13 @@ import BigNumberish = num.BigNumberish;
 
 export class SiwsMessage  {
   
-  // header: Header;
-
-  //  payload: Payload;
-
-  // signature: Signature;
   /** RFC 4501 dns authority that is requesting the signing. */
   domain: string;
 
   /** Starknet address performing the signing */
   address: string;
 
-  /** Human-readable ASCII assertion that the user will sign, and it must not contain newline characters. */
+  /** Human-readable ASCII assertion that the user will sign, and it must not contain newline characters. Must be limited to 31 characters */
   statement?: string;
 
   /** RFC 3986 URI referring to the resource that is the subject of the signing

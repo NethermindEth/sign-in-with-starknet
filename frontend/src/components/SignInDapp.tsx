@@ -10,26 +10,40 @@ import {
   verifySignInMessage,
 } from "../services/wallet.service"
 import styles from "../styles/Home.module.css"
+import MessageEditor from "./MessageEditor"
+import { SiwsMessage } from "siws_lib/dist"
 
 export const SignInDapp: FC = () => {
-  const [shortText, setShortText] = useState("Please sign in")
+  // const [shortText, setShortText] = useState("Please sign in")
   const [lastSig, setLastSig] = useState<string[]>([])
   const [lastMessage, setLastMessage] = useState<string>()
+  const [clientSideMessageError, setClientSideMessageError] = useState<string>('')
+  const [serverSideMessageError, setServerSideMessageError] = useState<string>('')
 
   const [signedIn, setSignedIn] = useState(false)
-
   const network = networkId()
+
+  useEffect(() =>{
+    const createMessage = async () => {
+      const loginString = 'Please Sign in' // cant be longer than 31  ascii characters
+      let siwsMessageString = await createSiwsMessage(loginString)
+      return siwsMessageString
+    }
+    createMessage().then((message) => {
+      console.log("message created", message)
+      setLastMessage(message)
+    }).catch((e) => console.error(e))
+  },[] )
 
   const handleSignSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault()
       // setTransactionStatus("approve")  
-      console.log("sign", shortText)
-      let siwsMessageString = await createSiwsMessage(shortText);
-      const result = await signMessage(siwsMessageString);
-
+      // console.log("sign", shortText)
+      // let siwsMessageString = await createSiwsMessage(shortText);
+      const result = await signMessage(lastMessage);
       setLastSig(result)
-      setLastMessage(siwsMessageString)
+      // setLastMessage(siwsMessageString)
     } catch (e) {
       console.error(e)
     }
@@ -46,22 +60,43 @@ export const SignInDapp: FC = () => {
     }
   }
 
-
   return (
     <>
+        <form>
+          <h2 className={styles.title}>Edit your message</h2>
+          {<MessageEditor
+          data={lastMessage}
+          onResult={(message: string) => {
+            try{
+              let validatedMessage = new SiwsMessage(message)
+              setLastMessage(message)
+              setClientSideMessageError('')
+              console.log("updated", message)
+            }
+            catch (e){
+              console.error(e)
+              setClientSideMessageError(e.message)
+            }
+          }}
+        / >}
+        {clientSideMessageError !== '' ?  (<label  style={{color: 'red'}} defaultValue={clientSideMessageError}>{clientSideMessageError}</label> ):""}
+        </form>
+
       <div className="columns">
+
         <form onSubmit={handleSignSubmit}>
+
           <h2 className={styles.title}>Sign</h2>
 
-          <label htmlFor="Short-Text">Short Text(limited to 31 ascii characters)</label>
+          {/* <label htmlFor="Short-Text">Short Text(limited to 31 ascii characters)</label>
           <input
-            type="text"
+            type="text" 
             id="short-text"
             name="short-text"
             value={shortText}
             onChange={(e) => setShortText(e.target.value)}
             placeholder={shortText}
-          />
+          /> */}
 
           <input type="submit" value="Sign" />
         </form>
@@ -87,8 +122,11 @@ export const SignInDapp: FC = () => {
             readOnly
           />
         </form>
-
       </div>
+
+      {console.log("rendering lastMessage", lastMessage)}
+
+
       <form onSubmit={handleVerifySubmit}>
           <h2 className={styles.title}>Verify and Sign In</h2>
 

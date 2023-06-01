@@ -11,9 +11,6 @@ else if (env == "development"){
   BACKEND_ADDR = "http://localhost:3001";
 }
 
-
-
-
 export const isWalletConnected = (): boolean => {
   if (typeof window === "undefined") {
     return false
@@ -56,16 +53,29 @@ export async function verifySignInMessage(message:string, signature:string[]) {
   const starknet = window.starknet as StarknetWindowObject
   await starknet.enable()
 
-  const res = await fetch(`${BACKEND_ADDR}/verify`, {
-    method: "POST",
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ message, signature }),
-    credentials: 'include'
-  });
-  const result = await res.text();
-  return Boolean(JSON.parse(result));
+  try{
+    const res = await fetch(`${BACKEND_ADDR}/verify`, {
+      method: "POST",
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message, signature }),
+      credentials: 'include'
+    });
+    
+    if (res.status != 200) {
+      throw new Error("Failed to verify message");
+    }
+
+    const result = await res.text();
+    console.log("verifySignInMessage result", result);
+    return Boolean(JSON.parse(result));
+  }
+  catch(e){
+    console.log("verifySignInMessage error", e);
+    return false;
+  }
+
 }
 
 export const networkId = (): string | undefined => {

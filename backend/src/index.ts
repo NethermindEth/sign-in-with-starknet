@@ -5,10 +5,11 @@ import Session from 'express-session';
 import { randomStringForEntropy } from '@stablelib/random';
 import { ErrorTypes,  Signature, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams } from 'siws_lib/dist/';
 import { SiwsMessage } from 'siws_lib/dist';
+import { error } from 'console';
 
 
 const app = express();
-const provider =  new starknet.Provider({
+const starknetProvider =  new starknet.Provider({
     sequencer: {
       network:  starknet.constants.NetworkName.SN_GOERLI
     }
@@ -58,7 +59,7 @@ app.post('/verify', async function (req: Request, res: Response) {
         // console.log( req['body'].message);
         // console.log( 'signature', req['body'].signature);
         
-        const isVerified = await message.verify({ signature: req['body'].signature, nonce: (req['session'] as any).nonce }, {provider:provider});
+        const isVerified = await message.verify({ signature: req['body'].signature, nonce: (req['session'] as any).nonce }, {provider:starknetProvider});
       
         if (isVerified.success) {
             console.log("Verified!");
@@ -72,8 +73,8 @@ app.post('/verify', async function (req: Request, res: Response) {
     } catch (e) {
         (req['session'] as any).siws = null;
         (req['session'] as any).nonce = null;
-        console.error(e);
-        switch (e) {
+        console.log(e);
+        switch (e.error.type) {
             case ErrorTypes.EXPIRED_MESSAGE: {
                 req['session'].save(() => res['status'](440).json({ message: e.message }));
                 break;

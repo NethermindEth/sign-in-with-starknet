@@ -1,6 +1,6 @@
 const DOMAIN = "(?<domain>([^?#]*)) wants you to sign in with your Starknet account:";
 const ADDRESS = "\\n(?<address>[a-zA-Z0-9]{65})\\n\\n";
-const STATEMENT = "((?<statement>[^\\n]+)\\n)?";
+const STATEMENT = "((?<statement>[^\\n]{31}}])\\n)?";
 const URI = "(([^:?#]+):)?(([^?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))";
 const URI_LINE = `\\nURI: (?<uri>${URI}?)`;
 const VERSION = "\\nVersion: (?<version>1)";
