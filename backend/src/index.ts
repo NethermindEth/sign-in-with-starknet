@@ -40,7 +40,6 @@ const generateNonce = () => {
 app.get('/nonce', function (req, res) {
   
     (req['session'] as any).nonce = generateNonce();
-    console.log((req['session'] as any).nonce);
     res.setHeader('Content-Type', 'text/plain');
     res['status'](200).send((req['session'] as any).nonce);
 
@@ -59,14 +58,24 @@ app.post('/verify', async function (req: Request, res: Response) {
         console.log( req['body'].message);
         console.log( 'signature', req['body'].signature);
 
-        console.log("req session nonce ", (req['session'] as any).nonce);
+        const nonce = (req['session'] as any).nonce
+        const signature = req['body'].signature;
+
+        console.log("req session nonce ", nonce);
         console.log("siws nonce ", message.nonce);
+
+        if (nonce == null){
+            throw new Error("Nonce was not provided");
+        }
+
+        if (signature == null){
+            throw new Error("Signature was not provided");
+        }
         
-        const isVerified = await message.verify({ signature: req['body'].signature, nonce: (req['session'] as any).nonce }, {provider:starknetProvider});
-      
-        
+        const isVerified = await message.verify({ signature: signature, nonce: nonce }, {provider:starknetProvider});
         (req['session'] as any).siws = message;
         // req['session'].cookie.expires = new Date(message.expirationTime);
+
         if (isVerified.success) {
             console.log("Verified!");
         } else {
@@ -79,17 +88,18 @@ app.post('/verify', async function (req: Request, res: Response) {
         (req['session'] as any).nonce = null;
         console.log(e);
         if (e.error instanceof SignInWithStarknetError){
-            switch (e.error ) {
+            console.log("SignInWithStarknetError type: ", e.error);
+            switch (e.error.type)  {
                 case ErrorTypes.EXPIRED_MESSAGE: {
-                    req['session'].save(() => res['status'](440).json({ message: e.message }));
+                    req['session'].save(() => res['status'](440).json({ message: e.error.type }));
                     break;
                 }
                 case ErrorTypes.INVALID_SIGNATURE: {
-                    req['session'].save(() => res['status'](422).json({ message: e.message }));
+                    req['session'].save(() => res['status'](422).json({ message: e.error.type }));
                     break;
                 }
                 default: {
-                    req['session'].save(() => res['status'](500).json({ message: e.message }));
+                    req['session'].save(() => res['status'](500).json({ message: e.error.type }));
                     break;
                 }
             }

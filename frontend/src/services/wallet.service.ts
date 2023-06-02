@@ -65,7 +65,7 @@ export async function verifySignInMessage(message:string, signature:string[]) {
   if (res.status != 200) {
     const errorJson = await res.json()
     console.log("error json", errorJson)
-    throw new Error(errorJson);
+    throw new Error(errorJson.message);
   }
 
   return true;
