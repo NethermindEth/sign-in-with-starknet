@@ -20,13 +20,14 @@ app.use(cors({
     origin: ['http://localhost:3000','https://localhost:3000', 'http://localhost:3001', 'https://localhost:3001', 'http://143.42.2.9:3000','https://143.42.2.9:3000'],
     credentials: true,
 }))
+const oneDay = 1000 * 60 * 60 * 24;
 
 app.use(Session({
     name: 'siws-quickstart',
     secret: "siws-quickstart-secret",
     resave: true,
     saveUninitialized: true,
-    cookie: { secure: false, sameSite: true }
+    cookie: { secure: false, sameSite: true, maxAge: oneDay }
 }));
 
 const generateNonce = () => {
@@ -38,11 +39,11 @@ const generateNonce = () => {
 };
 
 app.get('/nonce', function (req, res) {
-  
+    
     (req['session'] as any).nonce = generateNonce();
     res.setHeader('Content-Type', 'text/plain');
     res['status'](200).send((req['session'] as any).nonce);
-
+    console.log("nonce", (req['session'] as any).nonce);
 });
 
 app.post('/verify', async function (req: Request, res: Response) {
@@ -65,7 +66,7 @@ app.post('/verify', async function (req: Request, res: Response) {
         console.log("siws nonce ", message.nonce);
 
         if (nonce == null){
-            throw new Error("Nonce was not provided");
+            throw new Error("Nonce was not provided in the session" );
         }
 
         if (signature == null){
@@ -85,7 +86,7 @@ app.post('/verify', async function (req: Request, res: Response) {
         
     } catch (e) {
         (req['session'] as any).siws = null;
-        (req['session'] as any).nonce = null;
+//        (req['session'] as any).nonce = null; // UN COMMENT THIS LINE IN PRODUCTION. ONLY FOR DEMONSRTATION PURPOSES
         console.log(e);
         if (e.error instanceof SignInWithStarknetError){
             console.log("SignInWithStarknetError type: ", e.error);

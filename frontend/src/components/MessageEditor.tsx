@@ -61,7 +61,7 @@ const MessageEditor = (props: Props) => {
 
   
   const editableViewBg = useColorModeValue("gray.100", "gray.900");
-  const editableViewBgHover = useColorModeValue("gray.200", "gray.700");
+  const editableViewBgHover = useColorModeValue("gray.200", "gray.600");
   return (
     <Flex
       flexDir={"column"}
@@ -89,7 +89,7 @@ const MessageEditor = (props: Props) => {
       >
         
         <EditablePreview />
-        <EditableTextarea height="500px" width="100%"  />
+        <EditableTextarea height="500px" width="100%" textColor={"lightGray"} />
         <EditableControls />
       </Editable>}
     </Flex>

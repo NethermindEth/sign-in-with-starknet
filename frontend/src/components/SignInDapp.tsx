@@ -12,6 +12,7 @@ import {
 import styles from "../styles/Home.module.css"
 import MessageEditor from "./MessageEditor"
 import { SiwsMessage } from "siws_lib/dist"
+import { Spinner } from '@chakra-ui/react'
 
 export const SignInDapp: FC = () => {
   // const [shortText, setShortText] = useState("Please sign in")
@@ -20,10 +21,13 @@ export const SignInDapp: FC = () => {
   const [clientSideMessageError, setClientSideMessageError] = useState<string>('')
   const [serverSideMessageError, setServerSideMessageError] = useState<string>('')
 
+
+  const [logginIn, setLoggingIn] = useState(false)
   const [signedIn, setSignedIn] = useState(false)
   const network = networkId()
 
   useEffect(() =>{
+    console.log("useffect called")
     const createMessage = async () => {
       const loginString = 'Please Sign in' // cant be longer than 31  ascii characters
       let siwsMessageString = await createSiwsMessage(loginString)
@@ -31,9 +35,8 @@ export const SignInDapp: FC = () => {
     }
     createMessage().then((message) => {
       setLastMessage(message)
-      // test message creation passes the validation
     }).catch((e) => console.error(e))
-  },[] )
+  },[])
 
   const handleSignSubmit = async (e: React.FormEvent) => {
     try {
@@ -47,6 +50,9 @@ export const SignInDapp: FC = () => {
 
   const handleVerifySubmit = async (e: React.FormEvent) => {
     try {
+      setSignedIn(false)
+      setLoggingIn(true)
+      setServerSideMessageError('')
       e.preventDefault()
       const verified = await verifySignInMessage(lastMessage, lastSig)
       setSignedIn(verified)
@@ -55,6 +61,7 @@ export const SignInDapp: FC = () => {
       setSignedIn(false)
       setServerSideMessageError(e.message)
     }
+    setLoggingIn(false)
   }
 
   return (
@@ -122,13 +129,16 @@ export const SignInDapp: FC = () => {
       </div>
 
       <form onSubmit={handleVerifySubmit}>
-          <h2 className={styles.title}>Verify and Sign In</h2>
 
+          <h2 className={styles.title}>
+            Verify and Sign In { logginIn && <Spinner color='white.500' size='xl' width={30}/>}
+
+          </h2>
           {/* Label and textarea for value r */}
           <label htmlFor="Verify and Sign In">Verify and Sign In</label>
           {/* Label and textarea for value s */}
           <input type="submit" value="Sign In" />
-          {signedIn === true ? (<label htmlFor="Verified" style={{color: 'green'}}>Signed IN!!</label> ): (<label htmlFor="Verified" style={{color: 'red'}}>{serverSideMessageError}</label> )}
+          {signedIn === true ? (<label htmlFor="Verified" style={{color: 'green'} } className={styles.title} >Signed IN!!</label> ): (<label htmlFor="Verified" style={{color: 'red'}}>{serverSideMessageError}</label> )}
         </form>
     </>
   )
