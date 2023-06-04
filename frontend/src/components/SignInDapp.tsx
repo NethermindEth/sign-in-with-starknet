@@ -50,10 +50,10 @@ export const SignInDapp: FC = () => {
 
   const handleVerifySubmit = async (e: React.FormEvent) => {
     try {
+      e.preventDefault()
       setSignedIn(false)
       setLoggingIn(true)
       setServerSideMessageError('')
-      e.preventDefault()
       const verified = await verifySignInMessage(lastMessage, lastSig)
       setSignedIn(verified)
     } catch (e) {
@@ -135,7 +135,7 @@ export const SignInDapp: FC = () => {
 
           </h2>
           {/* Label and textarea for value r */}
-          <label htmlFor="Verify and Sign In">Verify and Sign In</label>
+          <label htmlFor="Verify and Sign In"></label>
           {/* Label and textarea for value s */}
           <input type="submit" value="Sign In" />
           {signedIn === true ? (<label htmlFor="Verified" style={{color: 'green'} } className={styles.title} >Signed IN!!</label> ): (<label htmlFor="Verified" style={{color: 'red'}}>{serverSideMessageError}</label> )}
