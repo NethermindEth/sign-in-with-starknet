@@ -80,7 +80,7 @@ app.post('/verify', async function (req: Request, res: Response) {
         if (isVerified.success) {
             console.log("Verified!");
         } else {
-            throw("Not Verified! Something went wrong.");
+            throw new Error("Not Verified! Something went wrong.");
         }
         req['session'].save(() => res['status'](200).send(true));
         

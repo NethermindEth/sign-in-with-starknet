@@ -2,6 +2,7 @@ import { connect, disconnect, StarknetWindowObject } from "get-starknet"
 import { shortString, constants, hash, typedData, Account, CallData, stark, num, Provider, Contract} from "starknet"
 import { SiwsMessage } from "siws_lib/dist"
 import abiAccountContract from "siws_lib/src/accountClassAbi.json";
+import { parseBytes32String } from "ethers/lib/utils";
 const env = process.env.NODE_ENV
 let BACKEND_ADDR = "";
 if (env == "production"){
@@ -36,14 +37,15 @@ export async function createSiwsMessage(statement:string) {
     });
     const responseNonce = await res.text()
     const address= await walletAddress();
-    console.log("chain id", parseInt(window.starknet?.provider?.chainId.toString()));
+    const chainId = await window.starknet?.provider?.getChainId()
+    console.log("chain id", chainId);
     const message = new SiwsMessage({
         domain,
         address,
         statement,
         uri: origin,
         version: '1',
-        chainId: 3/*parseInt( window.starknet?.provider?.chainId.toString())*/,
+        chainId: chainId,
         nonce: responseNonce
     });
     return message.prepareMessage();

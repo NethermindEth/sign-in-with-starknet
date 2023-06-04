@@ -33,7 +33,7 @@ export class SiwsMessage  {
 
   /** Chain ID to which the session is bound, and the network where
    * Contract Accounts must be resolved. */
-  chainId?: number;
+  chainId?: string;
 
   /** Randomized token used to prevent replay attacks, at least 8 alphanumeric
    * characters. */
@@ -144,9 +144,9 @@ export class SiwsMessage  {
       // this.resources = parsedMessage.resources;
     } else {
       Object.assign(this, param);
-      if (typeof this.chainId === "string") {
-        this.chainId = parseInt(this.chainId);
-      }
+      // if (typeof this.chainId === "string") {
+      //   this.chainId = parseInt(this.chainId);
+      // }
       if (!this.nonce) {
         this.nonce = randomBytes(8).toString("hex");
       }
