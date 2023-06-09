@@ -13,7 +13,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "importHelpers": true,
-    "types": ["node"],
+    "types": ["node", "jest"],
     "moduleResolution": "node",
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },

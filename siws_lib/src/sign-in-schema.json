@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "domain": {
+      "type": "object",
+      "properties": {
+        "chainId": {
+          "type": "string",
+          "enum": ["SN_GOERLI", "SN_GOERLI2", "SN_MAIN"]
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 31
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 31,
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "const": "0.0.1"
+        }
+      },
+      "required": ["chainId", "name", "version"],
+      "additionalProperties": false
+    },
+    "message": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{63,64}$"
+        },
+        "domain": {
+          "type": "string",
+          "maxLength": 31
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "nonce": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 31,
+          "pattern": "^[a-zA-Z0-9]*$"
+        },
+        "statement": {
+          "type": "string",
+          "maxLength": 31
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": ["address", "domain", "issuedAt", "nonce", "statement", "uri"],
+      "additionalProperties": false
+    },
+    "primaryType": {
+      "type": "string",
+      "const": "Message"
+    },
+    "types": {
+      "type": "object",
+      "properties": {
+        "Message": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "enum": ["domain", "address", "statement", "uri", "nonce", "issuedAt"]
+              },
+              "type": {
+                "type": "string",
+                "enum": ["string", "felt"]
+              }
+            },
+            "required": ["name", "type"],
+            "additionalProperties": false
+          },
+          "minItems": 6,
+          "maxItems": 6,
+          "uniqueItems": true
+        },
+        "StarkNetDomain": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "enum": ["name", "chainId", "version"]
+              },
+              "type": {
+                "type": "string",
+                "const": "felt"
+              }
+            },
+            "required": ["name", "type"]
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        }
+      },
+      "required": ["Message", "StarkNetDomain"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["domain", "message", "primaryType", "types"],
+  "additionalProperties": false
+}

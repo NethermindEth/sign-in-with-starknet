@@ -3,6 +3,7 @@ import { Box, Code, Flex, Icon } from "@chakra-ui/react";
 import { EditablePreview, EditableTextarea, useColorModeValue, IconButton, Input, useDisclosure, useEditableControls, ButtonGroup, SlideFade, Editable, Tooltip, EditableInput } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 import { json } from "starknet"
+import { SIWSTypedData } from "siws_lib/dist";
 
 
 const EditableControls = () => {
@@ -38,26 +39,31 @@ const EditableControls = () => {
 };
 
 interface Props {
-  data: any;
-  onResult: (result: any) => void;
+  data: SIWSTypedData;
+  onResult: (result: SIWSTypedData) => void;
 }
 
 const MessageEditor = (props: Props) => {
-  const [data, setData] = useState(props.data);
+
+  
+  const [data, setData] = useState(json.stringify(props.data, null, 2));
   const onSubmitString = (newValue: string) => {
     try {
       // let jsonObject = json.parse(newValue)
+
       console.log("newValue", newValue)
-      props.onResult(newValue)
+      let newData = SIWSTypedData.fromJson(newValue)
+      props.onResult(newData)
     }
     catch (e) {
       console.log(e)
+      throw e
     }
   }
 
   useEffect(() => {
     console.log("props.data", props.data)
-    setData(props.data)}, [props.data])
+    setData(json.stringify(props.data, null, 2))}, [props.data])
 
   
   const editableViewBg = useColorModeValue("gray.100", "gray.900");

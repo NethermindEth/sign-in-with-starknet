@@ -46,7 +46,7 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Argent x StarkNet test dapp</title>
+        <title>Sign-in-with-Starknet Test App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

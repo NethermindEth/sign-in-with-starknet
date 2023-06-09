@@ -5,43 +5,42 @@ import {
   getExplorerBaseUrl,
   networkId,
   signMessage,
-  createSiwsMessage,
+  createSiwsData,
   waitForTransaction,
-  verifySignInMessage,
+  verifySignInData,
 } from "../services/wallet.service"
 import styles from "../styles/Home.module.css"
 import MessageEditor from "./MessageEditor"
-import { SiwsMessage } from "siws_lib/dist"
+import { SIWSTypedData } from "siws_lib/dist"
 import { Spinner } from '@chakra-ui/react'
 
 export const SignInDapp: FC = () => {
   // const [shortText, setShortText] = useState("Please sign in")
   const [lastSig, setLastSig] = useState<string[]>([])
-  const [lastMessage, setLastMessage] = useState<string>()
+  const [signInData, setSignInData] = useState<SIWSTypedData>()
   const [clientSideMessageError, setClientSideMessageError] = useState<string>('')
   const [serverSideMessageError, setServerSideMessageError] = useState<string>('')
 
 
   const [logginIn, setLoggingIn] = useState(false)
   const [signedIn, setSignedIn] = useState(false)
-  const network = networkId()
 
   useEffect(() =>{
     console.log("useffect called")
-    const createMessage = async () => {
+    const createSignInData = async () => {
       const loginString = 'Please Sign in' // cant be longer than 31  ascii characters
-      let siwsMessageString = await createSiwsMessage(loginString)
-      return siwsMessageString
+      let siwsData = await createSiwsData(loginString)
+      return siwsData
     }
-    createMessage().then((message) => {
-      setLastMessage(message)
+    createSignInData().then((siwsData) => {
+      setSignInData(siwsData)
     }).catch((e) => console.error(e))
   },[])
 
   const handleSignSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault()
-      const result = await signMessage(lastMessage);
+      const result = await signMessage(signInData.toJson());
       setLastSig(result)
     } catch (e) {
       console.error(e)
@@ -54,7 +53,7 @@ export const SignInDapp: FC = () => {
       setSignedIn(false)
       setLoggingIn(true)
       setServerSideMessageError('')
-      const verified = await verifySignInMessage(lastMessage, lastSig)
+      const verified = await verifySignInData(signInData, lastSig)
       setSignedIn(verified)
     } catch (e) {
       console.error(e)
@@ -69,11 +68,11 @@ export const SignInDapp: FC = () => {
         <form>
           <h2 className={styles.title}>Edit your message</h2>
           {<MessageEditor
-          data={lastMessage}
-          onResult={(message: string) => {
+          data={signInData}
+          onResult={(signindata: SIWSTypedData) => {
             try{
-              setLastMessage(message)
-              let validatedMessage = (new SiwsMessage(message)).prepareMessage()
+              setSignInData(signindata)
+              // let validatedMessage = SIWSTypedData.fromJson(signindata)
               setClientSideMessageError('')
             }
             catch (e){

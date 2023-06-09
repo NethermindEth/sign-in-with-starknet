@@ -1,8 +1,7 @@
 import { connect, disconnect, StarknetWindowObject } from "get-starknet"
 import { shortString, constants, hash, typedData, Account, CallData, stark, num, Provider, Contract} from "starknet"
-import { SiwsMessage } from "siws_lib/dist"
-import abiAccountContract from "siws_lib/src/accountClassAbi.json";
-import { parseBytes32String } from "ethers/lib/utils";
+import { SIWSDomain, SIWSMessage, SIWSTypedData } from "siws_lib/dist"
+
 const env = process.env.NODE_ENV
 let BACKEND_ADDR = "";
 if (env == "production"){
@@ -29,7 +28,7 @@ export const walletAddress = async (): Promise<string | undefined> => {
   } catch { }
 }
 
-export async function createSiwsMessage(statement:string) {
+export async function createSiwsData(statement:string) {
     const domain = window.location.host;
     const origin = window.location.origin;
     const res = await fetch(`${BACKEND_ADDR}/nonce`, {
@@ -39,19 +38,28 @@ export async function createSiwsMessage(statement:string) {
     const address= await walletAddress();
     const chainId = await window.starknet?.provider?.getChainId()
     console.log("chain id", chainId);
-    const message = new SiwsMessage({
-        domain,
-        address,
-        statement,
-        uri: origin,
-        version: '1',
-        chainId: chainId,
-        nonce: responseNonce
-    });
-    return message.prepareMessage();
+
+    const siwsdomain : SIWSDomain = {version: '0.0.1',
+                                   chainId: networkId() as any,
+                                    name: 'Example App'}
+
+    const siwsMessage: SIWSMessage = {
+      domain,
+      address,
+      statement,
+      uri: origin,
+      nonce: responseNonce,
+      issuedAt: new Date().toISOString()}
+
+    const signindata = new SIWSTypedData(siwsdomain, siwsMessage);
+    return signindata
 }
 
-export async function verifySignInMessage(message:string, signature:string[]) {
+//     const signindata = new SIWSTypedData();
+//     return message.prepareMessage();
+// }
+
+export async function verifySignInData(signindata:SIWSTypedData, signature:string[]) {
   const starknet = window.starknet as StarknetWindowObject
   await starknet.enable()
 
@@ -60,7 +68,7 @@ export async function verifySignInMessage(message:string, signature:string[]) {
     headers: {
         'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ message, signature }),
+    body: JSON.stringify({ signindata: signindata.toJson(), signature }),
     credentials: 'include'
   });
 
@@ -77,11 +85,11 @@ export const networkId = (): string | undefined => {
   try {
     const chainId: string = window.starknet?.provider?.chainId === undefined ? constants.StarknetChainId.SN_GOERLI : window.starknet?.provider?.chainId
     if (constants.StarknetChainId.SN_MAIN === chainId) {
-      return "mainnet-alpha"
+      return "SN_MAIN"
     } else if (constants.StarknetChainId.SN_GOERLI === chainId) {
-      return "goerli-alpha"
+      return "SN_GOERLI"
     } else if (constants.StarknetChainId.SN_GOERLI2 === chainId) {
-      return "goerli-alpha2"
+      return "SN_GOERLI2"
     }
     else {
       return "localhost"
@@ -90,9 +98,9 @@ export const networkId = (): string | undefined => {
 }
 
 export const getExplorerBaseUrl = (): string | undefined => {
-  if (networkId() === "mainnet-alpha") {
+  if (networkId() === "SN_MAIN") {
     return "https://voyager.online"
-  } else if (networkId() === "goerli-alpha") {
+  } else if (networkId() === "SN_GOERLI") {
     return "https://goerli.voyager.online"
   }
 }
@@ -103,14 +111,14 @@ export const networkUrl = (): string | undefined => {
   } catch { }
 }
 
-export const signMessage = async (message: string) => {
+export const signMessage = async (signindata: string) => {
   const starknet = window.starknet as StarknetWindowObject
   await starknet.enable()
   // checks that enable succeeded
   if (starknet.isConnected === false)
     throw Error("starknet wallet not connected")
   
-  let siws = new SiwsMessage(message);
+  let siwsdata = SIWSTypedData.fromJson(signindata)
   // if (!shortString.isShortString(message)) {
   //   throw Error("message must be a short string" + message)
   // }
@@ -122,8 +130,6 @@ export const signMessage = async (message: string) => {
   // { name: "amount", type: "felt" },
   // { name: "nameGamer", type: "string" },
   // { name: "endDate", type: "felt" },
-
-
 
   // domain: string;
   // /** Starknet address performing the signing */
@@ -144,8 +150,6 @@ export const signMessage = async (message: string) => {
   // /** ISO 8601 datetime string of the current time. */
   // issuedAt: string;
 
-
-
   /** ISO 8601 datetime string that, if present, indicates when the signed
    * authentication message is no longer valid. */
  // expirationTime?: string;
@@ -159,11 +163,10 @@ export const signMessage = async (message: string) => {
    * resolved as part of authentication by the relying party. They are
    * expressed as RFC 3986 URIs separated by `\n- `. */
 //  resources?: Array<string>;
-  console.log("siws json", siws.toJSON());
-  const typedMessage = siws.prepareMessage712StyleTyped();
-  console.log("typedMessage: " ,siws.prepareMessage712StyleTyped());
-
-  const signature = await starknet.account.signMessage(typedMessage)
+  // console.log("siws json", siws.toJSON());
+  // const typedMessage = siws.prepareMessage712StyleTyped();
+  console.log("typedMessage: " ,siwsdata);
+  const signature = await starknet.account.signMessage(siwsdata)
   console.log("signature: " ,signature)
   return signature
 }

@@ -3,8 +3,8 @@ import cors from 'cors';
 import express, { Express, Request, Response } from 'express';
 import Session from 'express-session';
 import { randomStringForEntropy } from '@stablelib/random';
-import { ErrorTypes,  Signature, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams } from 'siws_lib/dist/';
-import { SiwsMessage } from 'siws_lib/dist';
+import { ErrorTypes,   SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams } from 'siws_lib/dist/';
+import { SIWSTypedData } from 'siws_lib/dist';
 import { error } from 'console';
 
 
@@ -48,22 +48,21 @@ app.get('/nonce', function (req, res) {
 
 app.post('/verify', async function (req: Request, res: Response) {
     try {
-        if (!req['body'].message) {
-            res['status'](422).json({ message: 'Expected prepareMessage object as body.' });
+        if (!req['body'].signindata) {
+            res['status'](422).json({ message: 'Expected signindata object as body.' });
             return;
         }
-        const message = new SiwsMessage(
-            req['body'].message,    
-        );
 
-        console.log( req['body'].message);
+        const signindata = SIWSTypedData.fromJson(req['body'].signindata);
+
+        console.log( signindata);
         console.log( 'signature', req['body'].signature);
 
         const nonce = (req['session'] as any).nonce
         const signature = req['body'].signature;
 
         console.log("req session nonce ", nonce);
-        console.log("siws nonce ", message.nonce);
+        console.log("siws nonce ", signindata.message.nonce);
 
         if (nonce == null){
             throw new Error("Nonce was not provided in the session" );
@@ -73,8 +72,8 @@ app.post('/verify', async function (req: Request, res: Response) {
             throw new Error("Signature was not provided");
         }
         
-        const isVerified = await message.verify({ signature: signature, nonce: nonce }, {provider:starknetProvider});
-        (req['session'] as any).siws = message;
+        const isVerified = await signindata.verify({ signature: signature, nonce: nonce }, {provider:starknetProvider});
+        (req['session'] as any).siws = signindata;
         // req['session'].cookie.expires = new Date(message.expirationTime);
 
         if (isVerified.success) {
@@ -120,6 +119,7 @@ app.get('/personal_information', function (req, res) {
     res.setHeader('Content-Type', 'text/plain');
     res.send(`You are authenticated and your address is: ${(req['session'] as any).siws.address}`);
 });
+
 const PORT = 3001;
 console.log("Listening on port", PORT);
 app.listen(3001);
