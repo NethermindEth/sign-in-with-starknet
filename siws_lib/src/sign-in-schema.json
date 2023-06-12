@@ -7,58 +7,70 @@
       "properties": {
         "chainId": {
           "type": "string",
-          "enum": ["SN_GOERLI", "SN_GOERLI2", "SN_MAIN"]
+          "enum": ["SN_GOERLI", "SN_GOERLI2", "SN_MAIN"],
+          "errorMessage": "ChainId must be one of 'SN_GOERLI', 'SN_GOERLI2', 'SN_MAIN'"
         },
         "name": {
           "type": "string",
-          "maxLength": 31
+          "maxLength": 31,
+          "errorMessage": "Name must be a string and cannot exceed 31 characters"
         },
         "version": {
           "type": "string",
           "maxLength": 31,
           "pattern": "^\\d+\\.\\d+\\.\\d+$",
-          "const": "0.0.1"
+          "const": "0.0.1",
+          "errorMessage": "Version must be a string in the format x.y.z and cannot exceed 31 characters"
         }
       },
       "required": ["chainId", "name", "version"],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "errorMessage": "Domain must include chainId, name, version"
     },
     "message": {
       "type": "object",
       "properties": {
         "address": {
           "type": "string",
-          "pattern": "^0x[a-fA-F0-9]{63,64}$"
+          "pattern": "^0x[a-fA-F0-9]{63,64}$",
+          "errorMessage": "Address must be a hexadecimal string with 66 characters, including the '0x' prefix"
         },
         "domain": {
           "type": "string",
-          "maxLength": 31
+          "maxLength": 31,
+          "errorMessage": "Domain must be a string and cannot exceed 31 characters"
         },
         "issuedAt": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "errorMessage": "IssuedAt must be a valid date-time string"
         },
         "nonce": {
           "type": "string",
           "minLength": 8,
           "maxLength": 31,
-          "pattern": "^[a-zA-Z0-9]*$"
+          "pattern": "^[a-zA-Z0-9]*$",
+          "errorMessage": "Nonce must be an alphanumeric string between 8 and 31 characters"
         },
         "statement": {
           "type": "string",
-          "maxLength": 31
+          "maxLength": 31,
+          "errorMessage": "Statement must be a string and cannot exceed 31 characters"
         },
         "uri": {
           "type": "string",
-          "format": "uri"
+          "format": "uri",
+          "errorMessage": "Uri must be a valid URI string"
         }
       },
       "required": ["address", "domain", "issuedAt", "nonce", "statement", "uri"],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "errorMessage": "Message must include address, domain, issuedAt, nonce, statement, uri"
     },
     "primaryType": {
       "type": "string",
-      "const": "Message"
+      "const": "Message",
+      "errorMessage": "PrimaryType must be 'Message'"
     },
     "types": {
       "type": "object",
@@ -70,19 +82,23 @@
             "properties": {
               "name": {
                 "type": "string",
-                "enum": ["domain", "address", "statement", "uri", "nonce", "issuedAt"]
+                "enum": ["domain", "address", "statement", "uri", "nonce", "issuedAt"],
+                "errorMessage": "Name must be one of 'domain', 'address', 'statement', 'uri', 'nonce', 'issuedAt'"
               },
               "type": {
                 "type": "string",
-                "enum": ["string", "felt"]
+                "enum": ["string", "felt"],
+                "errorMessage": "Type must be either 'string' or 'felt'"
               }
             },
             "required": ["name", "type"],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "errorMessage": "Items must include name and type"
           },
           "minItems": 6,
           "maxItems": 6,
-          "uniqueItems": true
+          "uniqueItems": true,
+          "errorMessage": "Message must contain exactly 6 unique items"
         },
         "StarkNetDomain": {
           "type": "array",
@@ -91,24 +107,31 @@
             "properties": {
               "name": {
                 "type": "string",
-                "enum": ["name", "chainId", "version"]
+                "enum": ["name", "chainId", "version"],
+                "errorMessage": "Name must be one of 'name', 'chainId', 'version'"
               },
               "type": {
                 "type": "string",
-                "const": "felt"
+                "const": "felt",
+                "errorMessage": "Type must be 'felt'"
               }
             },
-            "required": ["name", "type"]
+            "required": ["name", "type"],
+            "additionalProperties": false,
+            "errorMessage": "Items must include name and type"
           },
           "minItems": 3,
           "maxItems": 3,
-          "uniqueItems": true
+          "uniqueItems": true,
+          "errorMessage": "StarkNetDomain must contain exactly 3 unique items"
         }
       },
       "required": ["Message", "StarkNetDomain"],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "errorMessage": "Types must include Message and StarkNetDomain"
     }
   },
   "required": ["domain", "message", "primaryType", "types"],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "errorMessage": "Data must include domain, message, primaryType, types"
 }

@@ -1,5 +1,6 @@
 import Ajv2020 from "ajv/dist/2020"
 import addFormats from 'ajv-formats';
+import ajvErrors from 'ajv-errors';
 import schema from './sign-in-schema.json';
 import abiAccountContract from "./account-contract-abi.json";
 import { ErrorTypes, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams, VerifyOpts } from "./types";
@@ -23,7 +24,8 @@ export class SIWSTypedData implements ISIWSTypedData {
     constructor(domain: SIWSDomain, message: SIWSMessage) {
         const ajv = new Ajv2020({ allErrors: true, strict: false });
         addFormats(ajv);
-  
+        ajvErrors(ajv);
+
       const validate = ajv.compile(schema);
   
       this.domain = domain;
@@ -52,13 +54,13 @@ export class SIWSTypedData implements ISIWSTypedData {
         types: this.types
       };
   
-  
       // Perform validation
       if (!validate(dataForValidation)) {
-        console.log(validate.errors);
+        const errors = validate.errors;
+        // console.log(validate.errors);
+        const errorMessage = errors.map((error) => `${error.instancePath} ${error.message}`).join('. ');
         throw new SignInWithStarknetError(
-            ErrorTypes.UNABLE_TO_PARSE,
-            validate.errors.toString()
+          errorMessage as ErrorTypes,
           )
       }
     }
