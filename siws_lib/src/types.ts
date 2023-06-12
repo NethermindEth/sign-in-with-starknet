@@ -1,30 +1,44 @@
-import {  Provider } from "starknet";
+import { Provider } from "starknet";
 
-export interface SIWSDomain extends Record<string, unknown> {
+export interface ISiwsDomain extends Record<string, unknown> {
+  /** Chain ID to which the session is bound, and the network where
+ * Contract Accounts must be resolved. */
   chainId: 'SN_GOERLI' | 'SN_GOERLI2' | 'SN_MAIN';
+  /* name of the app restricted to 31 characters*/
   name: string;
+  /** Current version of the message/data. */
   version: string;
 }
 
-export interface SIWSMessage extends Record<string, unknown> {
+export interface ISiwsMessage extends Record<string, unknown> {
+  /** Starknet address performing the signing */
   address: string;
+  /**RFC 4501 dns authority that is requesting the signing. */
   domain: string;
+  /** ISO 8601 datetime string of the current time. */
   issuedAt: string;
+  /** Randomized token used to prevent replay attacks, at least 8 alphanumeric
+ * characters. */
   nonce: string;
+  /** Human-readable ASCII assertion that the user will sign, and it must not contain newline characters. */
   statement: string;
+  /** RFC 3986 URI referring to the resource that is the subject of the signing
+   *  (as in the __subject__ of a claim). */
   uri: string;
 }
 
-export interface ISIWSTypedData {
-  domain: SIWSDomain;
-  message: SIWSMessage;
+
+/* ISiwsTypedData has to map to the structure expected by starknet.js and it is specified here
+* https://www.starknetjs.com/docs/guides/signature/ */
+export interface ISiwsTypedData {
+  domain: ISiwsDomain;
+  message: ISiwsMessage;
   primaryType: string;
   types: {
-      Message: Array<{ name: string; type: string }>;
-      StarkNetDomain: Array<{ name: string; type: string }>;
+    Message: Array<{ name: string; type: string }>;
+    StarkNetDomain: Array<{ name: string; type: string }>;
   };
 }
-
 
 export enum ErrorTypes {
   /** `expirationTime` is present and in the past. */
@@ -91,17 +105,16 @@ export interface VerifyParams {
   // payload: Payload;
   signature: string[];
   network?: string;
-  // kp: KeyPair | StarknetWindowObject;
 
   /** RFC 4501 dns authority that is requesting the signing. */
   domain?: string;
-  
+
   /** Randomized token used to prevent replay attacks, at least 8 alphanumeric characters. */
   nonce?: string;
-  
+
   /**ISO 8601 datetime string of the current time. */
   time?: string;
-  
+
 }
 
 /**
@@ -115,16 +128,11 @@ export interface SignInWithStarknetResponse {
   error?: SignInWithStarknetError;
 
   /** Original message that was verified. */
-  data: ISIWSTypedData;
+  data: ISiwsTypedData;
 }
 
 export interface VerifyOpts {
   /** ethers provider to be used for EIP-1271 validation */
   provider?: Provider;
 
-  /** If the library should reject promises on errors, defaults to false */
-  // suppressExceptions?: boolean;
-
-  // /** Enables a custom verification function that will be ran alongside EIP-1271 check. */
-  // verificationFallback?: (params: VerifyParams, opts: VerifyOpts, message: SiweMessage, EIP1271Promise: Promise<SiweResponse>) => Promise<SiweResponse>;
 }

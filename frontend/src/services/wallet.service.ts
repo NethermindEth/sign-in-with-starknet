@@ -1,6 +1,6 @@
 import { connect, disconnect, StarknetWindowObject } from "get-starknet"
 import { shortString, constants, hash, typedData, Account, CallData, stark, num, Provider, Contract} from "starknet"
-import { SIWSDomain, SIWSMessage, SIWSTypedData } from "siws_lib/dist"
+import { ISiwsDomain, ISiwsMessage, SiwsTypedData } from "siws_lib/dist"
 
 const env = process.env.NODE_ENV
 let BACKEND_ADDR = "";
@@ -39,11 +39,11 @@ export async function createSiwsData(statement:string) {
     const chainId = await window.starknet?.provider?.getChainId()
     console.log("chain id", chainId);
 
-    const siwsdomain : SIWSDomain = {version: '0.0.1',
+    const ISiwsDomain : ISiwsDomain = {version: '0.0.1',
                                    chainId: networkId() as any,
                                     name: 'Example App'}
 
-    const siwsMessage: SIWSMessage = {
+    const ISiwsMessage: ISiwsMessage = {
       domain,
       address,
       statement,
@@ -51,15 +51,15 @@ export async function createSiwsData(statement:string) {
       nonce: responseNonce,
       issuedAt: new Date().toISOString()}
 
-    const signindata = new SIWSTypedData(siwsdomain, siwsMessage);
+    const signindata = new SiwsTypedData(ISiwsDomain, ISiwsMessage);
     return signindata
 }
 
-//     const signindata = new SIWSTypedData();
+//     const signindata = new SiwsTypedData();
 //     return message.prepareMessage();
 // }
 
-export async function verifySignInData(signindata:SIWSTypedData, signature:string[]) {
+export async function verifySignInData(signindata:SiwsTypedData, signature:string[]) {
   const starknet = window.starknet as StarknetWindowObject
   await starknet.enable()
 
@@ -118,18 +118,7 @@ export const signMessage = async (signindata: string) => {
   if (starknet.isConnected === false)
     throw Error("starknet wallet not connected")
   
-  let siwsdata = SIWSTypedData.fromJson(signindata)
-  // if (!shortString.isShortString(message)) {
-  //   throw Error("message must be a short string" + message)
-  // }
-
-  // message = hash.starknetKeccak(message).toString(16).substring(0, 31);
-  // console.log("message to sign: " + message)
-  // { name: "id", type: "felt" },
-  // { name: "from", type: "felt" },
-  // { name: "amount", type: "felt" },
-  // { name: "nameGamer", type: "string" },
-  // { name: "endDate", type: "felt" },
+  let siwsdata = SiwsTypedData.fromJson(signindata)
 
   // domain: string;
   // /** Starknet address performing the signing */

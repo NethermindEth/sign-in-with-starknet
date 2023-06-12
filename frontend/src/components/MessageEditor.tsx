@@ -3,7 +3,7 @@ import { Box, Code, Flex, Icon, position } from "@chakra-ui/react";
 import { EditablePreview, EditableTextarea, useColorModeValue, IconButton, Input, useDisclosure, useEditableControls, ButtonGroup, SlideFade, Editable, Tooltip, EditableInput } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 import { json } from "starknet"
-import { SIWSTypedData } from "siws_lib/dist";
+import { SiwsTypedData } from "siws_lib/dist";
 
 
 const EditableControls = () => {
@@ -39,8 +39,8 @@ const EditableControls = () => {
 };
 
 interface Props {
-  data: SIWSTypedData;
-  onResult: (result: SIWSTypedData) => void;
+  data: SiwsTypedData;
+  onResult: (result: SiwsTypedData) => void;
   onError: (error: string) => void;
 }
 
@@ -52,7 +52,7 @@ const MessageEditor = (props: Props) => {
     try {
       // let jsonObject = json.parse(newValue)
       console.log("newValue", newValue)
-      let newData = SIWSTypedData.fromJson(newValue)
+      let newData = SiwsTypedData.fromJson(newValue)
       props.onResult(newData)
     }
     catch (e) {

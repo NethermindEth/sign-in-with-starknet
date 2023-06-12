@@ -4,7 +4,7 @@ import express, { Express, Request, Response } from 'express';
 import Session from 'express-session';
 import { randomStringForEntropy } from '@stablelib/random';
 import { ErrorTypes,   SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams } from 'siws_lib/dist/';
-import { SIWSTypedData } from 'siws_lib/dist';
+import { SiwsTypedData } from 'siws_lib/dist';
 import { error } from 'console';
 
 
@@ -53,7 +53,7 @@ app.post('/verify', async function (req: Request, res: Response) {
             return;
         }
 
-        const signindata = SIWSTypedData.fromJson(req['body'].signindata);
+        const signindata = SiwsTypedData.fromJson(req['body'].signindata);
 
 
         const nonce = (req['session'] as any).nonce

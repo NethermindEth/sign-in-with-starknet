@@ -4,7 +4,7 @@ import addFormats from 'ajv-formats';
 // import { IData } from './types'; // Assume types are in a separate file
 import schema from "../src/sign-in-schema.json"
 import data from "./sign-in-payload.json"
-import { SIWSTypedData } from "../src/client";
+import { SiwsTypedData } from "../src/client";
 
 // import '@types/jest';
 
@@ -17,7 +17,7 @@ function validateData(schemaPath: string, dataPath: string): boolean {
     
       const validate = ajv.compile(schema);
       const obj = JSON.parse(JSON.stringify(data));
-      let typedData= new SIWSTypedData(obj.domain as any, obj.message as any);
+      let typedData= new SiwsTypedData(obj.domain as any, obj.message as any);
 
       const valid = validate(typedData);
     

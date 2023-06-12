@@ -9,13 +9,13 @@ import {
 } from "../services/wallet.service"
 import styles from "../styles/Home.module.css"
 import MessageEditor from "./MessageEditor"
-import { SIWSTypedData } from "siws_lib/dist"
+import { SiwsTypedData } from "siws_lib/dist"
 import { Spinner, Code } from '@chakra-ui/react'
 
 export const SignInDapp: FC = () => {
   // const [shortText, setShortText] = useState("Please sign in")
   const [lastSig, setLastSig] = useState<string[]>([])
-  const [signInData, setSignInData] = useState<SIWSTypedData>()
+  const [signInData, setSignInData] = useState<SiwsTypedData>()
   const [clientSideMessageError, setClientSideMessageError] = useState<string | undefined>(undefined)
   const [serverSideMessageError, setServerSideMessageError] = useState<string | undefined>(undefined)
 
@@ -67,10 +67,10 @@ export const SignInDapp: FC = () => {
           <h2 className={styles.title}>Edit your message</h2>
           {<MessageEditor
           data={signInData}
-          onResult={(signindata: SIWSTypedData) => {
+          onResult={(signindata: SiwsTypedData) => {
             try{
               setSignInData(signindata)
-              // let validatedMessage = SIWSTypedData.fromJson(signindata)
+              // let validatedMessage = SiwsTypedData.fromJson(signindata)
               setClientSideMessageError(null)
             }
             catch (e){
