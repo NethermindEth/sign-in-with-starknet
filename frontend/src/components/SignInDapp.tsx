@@ -1,12 +1,10 @@
 import { FC, useEffect, useState } from "react"
 
-import { truncateAddress } from "../services/address.service"
 import {
   getExplorerBaseUrl,
   networkId,
   signMessage,
   createSiwsData,
-  waitForTransaction,
   verifySignInData,
 } from "../services/wallet.service"
 import styles from "../styles/Home.module.css"

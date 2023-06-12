@@ -106,10 +106,12 @@ const MessageEditor = (props: Props) => {
         defaultValue={data} 
         onSubmit={onSubmitString}
         isPreviewFocusable={false}
+
       >
+        {/* <EditableTextarea style={{ flex: "1 1 auto", width: '100%' }} /> */}
+
+        <EditableTextarea height="500px" width="100%" backgroundColor={editableViewBg} textColor={"white"}/>
         <EditablePreview />
-        <EditableTextarea style={{ flex: "1 1 auto", width: '100%' } }         maxHeight={"500px"} 
- position={"fixed"}/>
         <EditableControls />
       </Editable>
       </Box>
