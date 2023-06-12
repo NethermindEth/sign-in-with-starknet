@@ -22,7 +22,7 @@ export class SIWSTypedData implements ISIWSTypedData {
     };
   
     constructor(domain: SIWSDomain, message: SIWSMessage) {
-        const ajv = new Ajv2020({ allErrors: true, strict: false });
+        const ajv = new Ajv2020({ allErrors: true, strict: true });
         addFormats(ajv);
         ajvErrors(ajv);
 
