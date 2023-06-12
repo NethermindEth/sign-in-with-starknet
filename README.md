@@ -7,14 +7,14 @@ off-chain services by signing a standard message format parameterized by scope
 and security mechanisms (e.g., a nonce). 
 
 
-#Build the lib first
+# Build the lib first
 ```shell
 cd siws_lib
 npm install
 npm run build
 ```
 
-#Deploy the backend second
+# Deploy the backend second
 
 ```shell
 cd backend
@@ -22,7 +22,7 @@ npm install
 npm run start
 ```
 
-#Deploy the frontend last
+# Deploy the frontend last
 
 ```shell
 cd frontend
@@ -31,7 +31,7 @@ npm run build
 npm run start
 ```
 
-#Deployment
+# Deployment
 Continous Deployment at (http://143.42.2.9:3000/)
 
 
