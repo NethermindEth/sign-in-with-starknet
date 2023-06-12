@@ -20,7 +20,7 @@ export interface ISiwsMessage extends Record<string, unknown> {
   /** Randomized token used to prevent replay attacks, at least 8 alphanumeric
  * characters. */
   nonce: string;
-  /** Human-readable ASCII assertion that the user will sign, and it must not contain newline characters. */
+  /** Human-readable ASCII assertion that the user will sign. */
   statement: string;
   /** RFC 3986 URI referring to the resource that is the subject of the signing
    *  (as in the __subject__ of a claim). */
