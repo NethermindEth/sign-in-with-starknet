@@ -21,16 +21,20 @@ export class SIWSTypedData implements ISIWSTypedData {
       StarkNetDomain: Array<{ name: string; type: string }>;
     };
   
-    constructor(domain: SIWSDomain, message: SIWSMessage) {
-        const ajv = new Ajv2020({ allErrors: true, strict: true });
-        addFormats(ajv);
-        ajvErrors(ajv);
-
-      const validate = ajv.compile(schema);
+    constructor(domain: SIWSDomain, message: SIWSMessage, primaryType? : string, types? : any) {
   
       this.domain = domain;
       this.message = message;
-      this.primaryType = "Message";
+      if (primaryType != null){
+        this.primaryType = primaryType;
+      }
+      else{
+        this.primaryType = "Message";
+      }
+      if (types != null){
+        this.types = types;
+      }
+      else{
       this.types = {
         Message: [
           { name: "domain", type: "string" },
@@ -46,10 +50,27 @@ export class SIWSTypedData implements ISIWSTypedData {
           { name: "version", type: "felt" },
         ],
       };
+    }
+  
+      // Perform validation
+      this.validateData();
+    }
+  
+    // Method to convert the object to a JSON string
+    toJson(): string {
+      return JSON.stringify(this);
+    }
 
+    public validateData(): boolean {
+      const ajv = new Ajv2020({ allErrors: true, strict: true });
+      addFormats(ajv);
+      ajvErrors(ajv);
+
+      const validate = ajv.compile(schema);
+  
       const dataForValidation = {
-        domain: domain,
-        message: message,
+        domain: this.domain,
+        message: this.message,
         primaryType: this.primaryType,
         types: this.types
       };
@@ -63,17 +84,13 @@ export class SIWSTypedData implements ISIWSTypedData {
           errorMessage as ErrorTypes,
           )
       }
-    }
-  
-    // Method to convert the object to a JSON string
-    toJson(): string {
-      return JSON.stringify(this);
-    }
+      return true;
+   }
   
     // Static method to create an instance from a JSON blob
     public static fromJson(json: string): SIWSTypedData {
       const obj = JSON.parse(json);
-      return new SIWSTypedData(obj.domain, obj.message);
+      return new SIWSTypedData(obj.domain, obj.message, obj.primaryType, obj.types);
     }
 
     public async verifyMessageHash(hash: BigNumberish, signature: string[], provider: Provider): Promise<boolean> {
