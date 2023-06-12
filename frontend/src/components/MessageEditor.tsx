@@ -45,24 +45,25 @@ interface Props {
 
 const MessageEditor = (props: Props) => {
 
-  
   const [data, setData] = useState(json.stringify(props.data, null, 2));
+  const [error, setError] = useState<string | undefined>(undefined);
+
   const onSubmitString = (newValue: string) => {
     try {
       // let jsonObject = json.parse(newValue)
-
+      setError(undefined)
       console.log("newValue", newValue)
       let newData = SIWSTypedData.fromJson(newValue)
       props.onResult(newData)
     }
     catch (e) {
       console.log(e)
-      throw e
+      setError(e.message)
+      // throw e
     }
   }
 
   useEffect(() => {
-    console.log("props.data", props.data)
     setData(json.stringify(props.data, null, 2))}, [props.data])
 
   
@@ -114,6 +115,7 @@ const MessageEditor = (props: Props) => {
         <EditablePreview />
         <EditableControls />
       </Editable>
+      {error && <Code color={"red"} backgroundColor={"white"}>{error}</Code>}
       </Box>
       }
     </Flex>

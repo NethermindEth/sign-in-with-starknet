@@ -167,7 +167,6 @@ export const signMessage = async (signindata: string) => {
   // const typedMessage = siws.prepareMessage712StyleTyped();
   console.log("typedMessage: " ,siwsdata);
   const signature = await starknet.account.signMessage(siwsdata)
-  console.log("signature: " ,signature)
   return signature
 }
 
