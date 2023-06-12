@@ -41,24 +41,23 @@ const EditableControls = () => {
 interface Props {
   data: SIWSTypedData;
   onResult: (result: SIWSTypedData) => void;
+  onError: (error: string) => void;
 }
 
 const MessageEditor = (props: Props) => {
 
   const [data, setData] = useState(json.stringify(props.data, null, 2));
-  const [error, setError] = useState<string | undefined>(undefined);
 
   const onSubmitString = (newValue: string) => {
     try {
       // let jsonObject = json.parse(newValue)
-      setError(undefined)
       console.log("newValue", newValue)
       let newData = SIWSTypedData.fromJson(newValue)
       props.onResult(newData)
     }
     catch (e) {
       console.log(e)
-      setError(e.message)
+      props.onError(e.message)
       // throw e
     }
   }
@@ -115,7 +114,6 @@ const MessageEditor = (props: Props) => {
         <EditablePreview />
         <EditableControls />
       </Editable>
-      {error && <Code color={"red"} backgroundColor={"white"}>{error}</Code>}
       </Box>
       }
     </Flex>

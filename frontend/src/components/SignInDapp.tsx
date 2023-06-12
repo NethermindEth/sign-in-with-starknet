@@ -10,14 +10,14 @@ import {
 import styles from "../styles/Home.module.css"
 import MessageEditor from "./MessageEditor"
 import { SIWSTypedData } from "siws_lib/dist"
-import { Spinner } from '@chakra-ui/react'
+import { Spinner, Code } from '@chakra-ui/react'
 
 export const SignInDapp: FC = () => {
   // const [shortText, setShortText] = useState("Please sign in")
   const [lastSig, setLastSig] = useState<string[]>([])
   const [signInData, setSignInData] = useState<SIWSTypedData>()
-  const [clientSideMessageError, setClientSideMessageError] = useState<string>('')
-  const [serverSideMessageError, setServerSideMessageError] = useState<string>('')
+  const [clientSideMessageError, setClientSideMessageError] = useState<string | undefined>(undefined)
+  const [serverSideMessageError, setServerSideMessageError] = useState<string | undefined>(undefined)
 
 
   const [logginIn, setLoggingIn] = useState(false)
@@ -50,7 +50,7 @@ export const SignInDapp: FC = () => {
       e.preventDefault()
       setSignedIn(false)
       setLoggingIn(true)
-      setServerSideMessageError('')
+      setServerSideMessageError(null)
       const verified = await verifySignInData(signInData, lastSig)
       setSignedIn(verified)
     } catch (e) {
@@ -71,20 +71,21 @@ export const SignInDapp: FC = () => {
             try{
               setSignInData(signindata)
               // let validatedMessage = SIWSTypedData.fromJson(signindata)
-              setClientSideMessageError('')
+              setClientSideMessageError(null)
             }
             catch (e){
               console.error(e)
               setClientSideMessageError(e.message + " \n You can try signing in with the message but since there were validation issues you might not be able to sign in.")
             }
+          }} onError={(e: string) => {
+          setClientSideMessageError(e)
           }}
         / >}
-        {clientSideMessageError !== '' ?  (<label  style={{color: 'red'}} defaultValue={clientSideMessageError}>{clientSideMessageError}</label> ):""}
+        {clientSideMessageError &&  <Code color={"red"} backgroundColor={"white"}>{clientSideMessageError}</Code>}
         </form>
+      { <div className="columns" >
 
-      <div className="columns">
-
-        <form onSubmit={handleSignSubmit}>
+        <form onSubmit={handleSignSubmit}  >
 
           <h2 className={styles.title}>Sign</h2>
 
@@ -98,7 +99,7 @@ export const SignInDapp: FC = () => {
             placeholder={shortText}
           /> */}
 
-          <input type="submit" value="Sign" />
+          <input type="submit" value="Sign" disabled={(clientSideMessageError != null)}   />
         </form>
         <form>
           <h2 className={styles.title}>Sign results</h2>
@@ -123,9 +124,9 @@ export const SignInDapp: FC = () => {
             onChange={(e) => setLastSig([lastSig[0], e.target.value])}
           />
         </form>
-      </div>
+      </div>}
 
-      <form onSubmit={handleVerifySubmit}>
+      { <form onSubmit={handleVerifySubmit}>
 
           <h2 className={styles.title}>
             Verify and Sign In { logginIn && <Spinner color='white.500' size='xl' width={30}/>}
@@ -134,9 +135,9 @@ export const SignInDapp: FC = () => {
           {/* Label and textarea for value r */}
           <label htmlFor="Verify and Sign In"></label>
           {/* Label and textarea for value s */}
-          <input type="submit" value="Sign In" />
+          <input type="submit" value="Sign In" disabled={(clientSideMessageError != null)} />
           {signedIn === true ? (<label htmlFor="Verified" style={{color: 'green'} } className={styles.title} >Signed IN!!</label> ): (<label htmlFor="Verified" style={{color: 'red'}}>{serverSideMessageError}</label> )}
-        </form>
+        </form>}
     </>
   )
 }
