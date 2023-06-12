@@ -1,6 +1,30 @@
 import {  Provider } from "starknet";
 
-import { SIWSTypedData } from "./sign-in-message";
+export interface SIWSDomain extends Record<string, unknown> {
+  chainId: 'SN_GOERLI' | 'SN_GOERLI2' | 'SN_MAIN';
+  name: string;
+  version: string;
+}
+
+export interface SIWSMessage extends Record<string, unknown> {
+  address: string;
+  domain: string;
+  issuedAt: string;
+  nonce: string;
+  statement: string;
+  uri: string;
+}
+
+export interface ISIWSTypedData {
+  domain: SIWSDomain;
+  message: SIWSMessage;
+  primaryType: string;
+  types: {
+      Message: Array<{ name: string; type: string }>;
+      StarkNetDomain: Array<{ name: string; type: string }>;
+  };
+}
+
 
 export enum ErrorTypes {
   /** `expirationTime` is present and in the past. */
@@ -91,7 +115,7 @@ export interface SignInWithStarknetResponse {
   error?: SignInWithStarknetError;
 
   /** Original message that was verified. */
-  data: SIWSTypedData;
+  data: ISIWSTypedData;
 }
 
 export interface VerifyOpts {

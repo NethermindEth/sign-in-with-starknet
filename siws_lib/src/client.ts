@@ -1,39 +1,15 @@
 import Ajv2020 from "ajv/dist/2020"
 import addFormats from 'ajv-formats';
-import schema from './sign-in-schema.json'; // update with your actual schema path
+import schema from './sign-in-schema.json';
 import abiAccountContract from "./account-contract-abi.json";
 import { ErrorTypes, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams, VerifyOpts } from "./types";
-import { randomBytes } from "./util";
-import { ec, hash, typedData, num, Provider, Contract, json, Account, CallData, stark } from "starknet";
+import {typedData, num, Provider, Contract, } from "starknet";
+import { ISIWSTypedData, SIWSDomain, SIWSMessage } from "./types";
 
 import TypedData = typedData.TypedData;
 import getMessageHash = typedData.getMessageHash;
 import BigNumberish = num.BigNumberish;
 
-export interface SIWSDomain extends Record<string, unknown> {
-    chainId: 'SN_GOERLI' | 'SN_GOERLI2' | 'SN_MAIN';
-    name: string;
-    version: string;
-}
-  
-export interface SIWSMessage extends Record<string, unknown> {
-    address: string;
-    domain: string;
-    issuedAt: string;
-    nonce: string;
-    statement: string;
-    uri: string;
-}
-
-export interface ISIWSTypedData {
-    domain: SIWSDomain;
-    message: SIWSMessage;
-    primaryType: string;
-    types: {
-        Message: Array<{ name: string; type: string }>;
-        StarkNetDomain: Array<{ name: string; type: string }>;
-    };
-}
   
 export class SIWSTypedData implements ISIWSTypedData {
     domain: SIWSDomain;
@@ -68,8 +44,6 @@ export class SIWSTypedData implements ISIWSTypedData {
           { name: "version", type: "felt" },
         ],
       };
-
-
 
       const dataForValidation = {
         domain: domain,
@@ -207,6 +181,5 @@ export class SIWSTypedData implements ISIWSTypedData {
           });
         });
       }
-    
   }
   

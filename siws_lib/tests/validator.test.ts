@@ -4,7 +4,7 @@ import addFormats from 'ajv-formats';
 // import { IData } from './types'; // Assume types are in a separate file
 import schema from "../src/sign-in-schema.json"
 import data from "./sign-in-payload.json"
-import { SIWSTypedData } from "../src/sign-in-message";
+import { SIWSTypedData } from "../src/client";
 
 // import '@types/jest';
 

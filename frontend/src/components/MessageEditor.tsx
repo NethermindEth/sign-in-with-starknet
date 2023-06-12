@@ -1,5 +1,5 @@
 import React, { Key, useEffect, useState } from "react";
-import { Box, Code, Flex, Icon } from "@chakra-ui/react";
+import { Box, Code, Flex, Icon, position } from "@chakra-ui/react";
 import { EditablePreview, EditableTextarea, useColorModeValue, IconButton, Input, useDisclosure, useEditableControls, ButtonGroup, SlideFade, Editable, Tooltip, EditableInput } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 import { json } from "starknet"
@@ -78,6 +78,19 @@ const MessageEditor = (props: Props) => {
     >
       
       {data && 
+      <Box
+      display={"flex"} 
+      flexDirection={"column"}
+      maxHeight={"500px"} 
+      position={"relative"}
+      width={"100%"} 
+      maxW={"100%"} 
+      overflowX={"scroll"} 
+      transition={"all 0.3s ease"}
+      backgroundColor={editableViewBg} 
+      _hover={{ backgroundColor: editableViewBgHover }} 
+    >
+  
       <Editable 
         maxHeight={"500px"} 
         position={"relative"}
@@ -92,12 +105,15 @@ const MessageEditor = (props: Props) => {
         _hover={{ backgroundColor: editableViewBgHover }} 
         defaultValue={data} 
         onSubmit={onSubmitString}
+        isPreviewFocusable={false}
       >
-        
         <EditablePreview />
-        <EditableTextarea height="500px" width="100%" textColor={"lightGray"} />
+        <EditableTextarea style={{ flex: "1 1 auto", width: '100%' } }         maxHeight={"500px"} 
+ position={"fixed"}/>
         <EditableControls />
-      </Editable>}
+      </Editable>
+      </Box>
+      }
     </Flex>
   );
 };
