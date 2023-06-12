@@ -55,12 +55,12 @@ app.post('/verify', async function (req: Request, res: Response) {
 
         const signindata = SIWSTypedData.fromJson(req['body'].signindata);
 
-        console.log( signindata);
-        console.log( 'signature', req['body'].signature);
 
         const nonce = (req['session'] as any).nonce
         const signature = req['body'].signature;
 
+        console.log( signindata);
+        console.log( 'signature', req['body'].signature);
         console.log("req session nonce ", nonce);
         console.log("siws nonce ", signindata.message.nonce);
 
