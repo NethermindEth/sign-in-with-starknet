@@ -104,7 +104,7 @@ app.post('/verify', async function (req: Request, res: Response) {
         const providersChainId = starknet.shortString.decodeShortString(await starknetProvider.getChainId())
         const isVerified = await signindata.verify({ signature: signature, nonce: nonce, network: providersChainId }, {provider:starknetProvider});
         (req['session'] as any).siws = signindata;
-        // req['session'].cookie.expires = new Date(message.expirationTime);
+        // req['session'].cookie.expires = new Date(signindata.message.expirationTime);
 
         if (isVerified.success) {
             console.log("Verified!");
