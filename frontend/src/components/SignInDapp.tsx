@@ -36,7 +36,7 @@ export const SignInDapp: FC = () => {
   const handleSignSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault()
-      const result = await signMessage(signInData.toJson());
+      const result = await signMessage(signInData);
       setLastSig(result)
     } catch (e) {
       console.error(e)

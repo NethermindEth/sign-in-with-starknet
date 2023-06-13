@@ -1,6 +1,6 @@
 import { connect, disconnect, StarknetWindowObject } from "get-starknet"
 import { shortString, constants, hash, typedData, Account, CallData, stark, num, Provider, Contract} from "starknet"
-import { ISiwsDomain, ISiwsMessage, SiwsTypedData } from "siws_lib/dist"
+import { ISiwsDomain, ISiwsMessage, ISiwsTypedData, SiwsTypedData } from "siws_lib/dist"
 
 const env = process.env.NODE_ENV
 let BACKEND_ADDR = "";
@@ -97,15 +97,14 @@ export const networkUrl = (): string | undefined => {
   } catch { }
 }
 
-export const signMessage = async (signindata: string) => {
+export const signMessage = async (signindata: ISiwsTypedData) => {
   const starknet = window.starknet as StarknetWindowObject
   await starknet.enable()
   // checks that enable succeeded
   if (starknet.isConnected === false)
     throw Error("starknet wallet not connected")
   
-  let siwsdata = SiwsTypedData.fromJson(signindata)
-  const signature = await starknet.account.signMessage(siwsdata)
+  const signature = await starknet.account.signMessage(signindata)
   return signature
 }
 
