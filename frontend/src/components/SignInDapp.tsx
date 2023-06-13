@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react"
 
 import {
-  getExplorerBaseUrl,
   networkId,
   signMessage,
   createSiwsData,
@@ -24,7 +23,6 @@ export const SignInDapp: FC = () => {
   const [signedIn, setSignedIn] = useState(false)
 
   useEffect(() =>{
-    console.log("useffect called")
     const createSignInData = async () => {
       const loginString = 'Please Sign in' // cant be longer than 31  ascii characters
       let siwsData = await createSiwsData(loginString)
