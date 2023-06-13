@@ -8,20 +8,35 @@ import { SiwsTypedData } from 'siws_lib/dist';
 import { error } from 'console';
 
 
-const app = express();
-const starknetProvider =  new starknet.Provider({
+/* providers for SN_MAIN, SN_GOERLI, SN_GOERLI2
+*/
+const goerliProvider =  new starknet.Provider({
     sequencer: {
       network:  starknet.constants.NetworkName.SN_GOERLI
     }
   })
+
+const goerli2Provider =  new starknet.Provider({
+    sequencer: {
+        network:  starknet.constants.NetworkName.SN_GOERLI2
+    }   
+})
+
+const mainProvider =  new starknet.Provider({
+    sequencer: {
+        network:  starknet.constants.NetworkName.SN_MAIN
+    }   
+})
+
+const oneDay = 1000 * 60 * 60 * 24;
+
   
+const app = express();
 app.use(express.json());
 app.use(cors({
     origin: ['http://localhost:3000','https://localhost:3000', 'http://localhost:3001', 'https://localhost:3001', 'http://143.42.2.9:3000','https://143.42.2.9:3000'],
     credentials: true,
 }))
-const oneDay = 1000 * 60 * 60 * 24;
-
 app.use(Session({
     name: 'siws-quickstart',
     secret: "siws-quickstart-secret",
@@ -71,8 +86,23 @@ app.post('/verify', async function (req: Request, res: Response) {
         if (signature == null){
             throw new Error("Signature was not provided");
         }
-        
-        const isVerified = await signindata.verify({ signature: signature, nonce: nonce }, {provider:starknetProvider});
+
+        let starknetProvider = goerliProvider;
+        if (signindata.message.chainId == starknet.constants.NetworkName.SN_MAIN){
+            starknetProvider = mainProvider;
+        }
+        else if (signindata.message.chainId == starknet.constants.NetworkName.SN_GOERLI2){
+            starknetProvider = goerli2Provider;
+        }
+        else if (signindata.message.chainId != starknet.constants.NetworkName.SN_GOERLI){
+            starknetProvider = goerliProvider;
+        }
+        else {
+            throw new Error("Invalid chainId");
+        }
+
+        const providersChainId = starknet.shortString.decodeShortString(await starknetProvider.getChainId())
+        const isVerified = await signindata.verify({ signature: signature, nonce: nonce, network: providersChainId }, {provider:starknetProvider});
         (req['session'] as any).siws = signindata;
         // req['session'].cookie.expires = new Date(message.expirationTime);
 
