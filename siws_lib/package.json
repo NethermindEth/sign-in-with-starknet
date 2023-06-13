@@ -1,6 +1,6 @@
 {
   "name": "siws_lib",
-  "version": "2.1.8",
+  "version": "0.0.1",
   "description": "Sign-In with Starknet helper library",
   "main": "./dist/siws.js",
   "types": "./dist/siws.d.ts",
