@@ -20,7 +20,7 @@
           "maxLength": 31,
           "pattern": "^\\d+\\.\\d+\\.\\d+$",
           "const": "0.0.1",
-          "errorMessage": "Version must be a string in the format x.y.z and cannot exceed 31 characters"
+          "errorMessage": "Version must be a string in the format x.y.z and must be 0.0.1"
         }
       },
       "required": ["chainId", "name", "version"],
@@ -61,6 +61,16 @@
           "type": "string",
           "format": "uri",
           "errorMessage": "Uri must be a valid URI string"
+        },
+        "expirationTime": {
+          "type": "string",
+          "format": "date-time",
+          "errorMessage": "ExpirationTime, if present, must be a valid date-time string"
+        },
+        "notBefore": {
+          "type": "string",
+          "format": "date-time",
+          "errorMessage": "NotBefore, if present, must be a valid date-time string"
         }
       },
       "required": ["address", "domain", "issuedAt", "nonce", "statement", "uri"],

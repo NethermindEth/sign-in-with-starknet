@@ -4,7 +4,7 @@ import ajvErrors from 'ajv-errors';
 import schema from './sign-in-schema.json';
 import abiAccountContract from "./account-contract-abi.json";
 import { ErrorTypes, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams, VerifyOpts } from "./types";
-import { typedData, num, Provider, Contract, } from "starknet";
+import { typedData, num, Provider, Contract, shortString } from "starknet";
 import { ISiwsTypedData, ISiwsDomain, ISiwsMessage } from "./types";
 
 import TypedData = typedData.TypedData;
@@ -93,8 +93,7 @@ export class SiwsTypedData implements ISiwsTypedData {
     return new SiwsTypedData(obj.domain, obj.message, obj.primaryType, obj.types);
   }
 
-  public async verifyMessageHash(hash: BigNumberish, signature: string[], provider: Provider): Promise<boolean> {
-
+  async verifyMessageHash(hash: BigNumberish, signature: string[], provider: Provider): Promise<boolean> {
     try {
       const accountContract = new Contract(abiAccountContract, this.message.address, provider);
       await accountContract.call("isValidSignature", [hash, signature]);
@@ -105,7 +104,7 @@ export class SiwsTypedData implements ISiwsTypedData {
     }
   }
 
-  public async verifyMessage(data: typedData.TypedData, signature: string[], provider: Provider): Promise<boolean> {
+  async verifyMessage(data: typedData.TypedData, signature: string[], provider: Provider): Promise<boolean> {
     const hash = await getMessageHash(data, this.message.address);
     return this.verifyMessageHash(hash, signature, provider);
   }
@@ -115,10 +114,19 @@ export class SiwsTypedData implements ISiwsTypedData {
    * @param params Parameters to verify the integrity of the message, signature is required.
    * @returns {Promise<SignInWithStarknetResponse>} This object if valid.
    */
-  verify(params: VerifyParams, opts: VerifyOpts): Promise<SignInWithStarknetResponse> {
+  public async verify(params: VerifyParams, opts: VerifyOpts): Promise<SignInWithStarknetResponse> {
     return new Promise<SignInWithStarknetResponse>((resolve, reject) => {
       const { domain, nonce, network, signature } = params;
 
+      /** check network/chain Id */
+      if (network && network !== this.domain.chainId) {
+        reject({
+          success: false,
+          data: this,
+          error: new SignInWithStarknetError(ErrorTypes.NETWORK_MISMATCH, network, this.domain.chainId),
+        });
+      }
+      
       /** Domain binding */
       if (domain && domain !== this.message.domain) {
         reject({
@@ -141,39 +149,38 @@ export class SiwsTypedData implements ISiwsTypedData {
       const checkTime = new Date();
 
       /** Expiry Checks */
-      // if (this.expirationTime) {
-      //   const expirationDate = new Date(this.expirationTime);
+      if (this.message.expirationTime) {
+        const expirationDate = new Date(this.message.expirationTime);
 
-      //   // Check if the message hasn't expired
-      //   if (checkTime.getTime() >= expirationDate.getTime()) {
-      //     resolve({
-      //       success: false,
-      //       data: this,
-      //       error: new SignInWithStarknetError(
-      //         ErrorTypes.EXPIRED_MESSAGE,
-      //         `${checkTime.toISOString()} < ${expirationDate.toISOString()}`,
-      //         `${checkTime.toISOString()} >= ${expirationDate.toISOString()}`
-      //       ),
-      //     });
-      //   }
-      // }
+        // Check if the message hasn't expired
+        if (checkTime.getTime() >= expirationDate.getTime()) {
+          resolve({
+            success: false,
+            data: this,
+            error: new SignInWithStarknetError(
+              ErrorTypes.EXPIRED_MESSAGE,
+              `${checkTime.toISOString()} < ${expirationDate.toISOString()}`,
+              `${checkTime.toISOString()} >= ${expirationDate.toISOString()}`
+            ),
+          });
+        }
+      }
 
-      // /** Message is valid already */
-      // if (this.notBefore) {
-      //   const notBefore = new Date(this.notBefore);
-      //   if (checkTime.getTime() < notBefore.getTime()) {
-      //     resolve({
-      //       success: false,
-      //       data: this,
-      //       error: new SignInWithStarknetError(
-      //         ErrorTypes.EXPIRED_MESSAGE,
-      //         `${checkTime.toISOString()} >= ${notBefore.toISOString()}`,
-      //         `${checkTime.toISOString()} < ${notBefore.toISOString()}`
-      //       ),
-      //     });
-      //   }
-      // }
-
+      /** Message is valid already */
+      if (this.message.notBefore) {
+        const notBefore = new Date(this.message.notBefore);
+        if (checkTime.getTime() < notBefore.getTime()) {
+          resolve({
+            success: false,
+            data: this,
+            error: new SignInWithStarknetError(
+              ErrorTypes.EXPIRED_MESSAGE,
+              `${checkTime.toISOString()} >= ${notBefore.toISOString()}`,
+              `${checkTime.toISOString()} < ${notBefore.toISOString()}`
+            ),
+          });
+        }
+      }
 
       this.verifyMessage(this, signature, opts.provider)
         .then((valid) => {

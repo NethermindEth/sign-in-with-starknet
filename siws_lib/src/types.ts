@@ -25,6 +25,12 @@ export interface ISiwsMessage extends Record<string, unknown> {
   /** RFC 3986 URI referring to the resource that is the subject of the signing
    *  (as in the __subject__ of a claim). */
   uri: string;
+  /**ISO 8601 datetime string that, if present, indicates when the signed
+   * authentication message is no longer valid. */
+  expirationTime?: string;
+  /**ISO 8601 datetime string that, if present, indicates when the signed
+   * authentication message will become valid. */
+  notBefore?: string;
 }
 
 
@@ -46,6 +52,9 @@ export enum ErrorTypes {
 
   /** `domain` is not a valid authority or is empty. */
   INVALID_DOMAIN = "Invalid domain.",
+
+  /** `chainId` is not a valid chain ID. */
+  NETWORK_MISMATCH = "Network do not match provided network for verification.",
 
   /** `domain` don't match the domain provided for verification. */
   DOMAIN_MISMATCH = "Domain do not match provided domain for verification.",
