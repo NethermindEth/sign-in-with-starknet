@@ -2,7 +2,7 @@ import { Provider } from "starknet";
 
 export interface ISiwsDomain extends Record<string, unknown> {
   /** Chain ID to which the session is bound, and the network where
- * Contract Accounts must be resolved. */
+  * Contract Accounts must be resolved. */
   chainId: 'SN_GOERLI' | 'SN_GOERLI2' | 'SN_MAIN';
   /* name of the app restricted to 31 characters*/
   name: string;
