@@ -5,7 +5,7 @@ import { ISiwsDomain, ISiwsMessage, ISiwsTypedData, SiwsTypedData } from "siws_l
 const env = process.env.NODE_ENV
 let BACKEND_ADDR = "";
 if (env == "production"){
-  BACKEND_ADDR = "http://143.42.2.9:3001";
+  BACKEND_ADDR = "https://siws.nethermind.io/api";
 }
 else if (env == "development"){
   BACKEND_ADDR = "http://localhost:3001";
