@@ -32,7 +32,7 @@ npm run start
 ```
 
 ## Deployment
-Continous Deployment at (http://143.42.2.9:3000/)
+Continous Deployment at (https://siws.nethermind.io/)
 
 ## Disclaimer
 The Typed Data format is not final and is a work in progress. We welcome community feedback on this project. 
