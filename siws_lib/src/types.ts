@@ -6,7 +6,7 @@ export interface ISiwsDomain extends Record<string, unknown> {
   chainId: 'SN_GOERLI' | 'SN_GOERLI2' | 'SN_MAIN';
   /* name of the app restricted to 31 characters*/
   name: string;
-  /** Current version of the message/data. */
+  /** Current version of the App making the signing request. */
   version: string;
 }
 
@@ -25,6 +25,8 @@ export interface ISiwsMessage extends Record<string, unknown> {
   /** RFC 3986 URI referring to the resource that is the subject of the signing
    *  (as in the __subject__ of a claim). */
   uri: string;
+  /** Current version of the message/data. */
+  version: string;
   /**ISO 8601 datetime string that, if present, indicates when the signed
    * authentication message is no longer valid. */
   expirationTime?: string;
@@ -111,7 +113,6 @@ export class SignInWithStarknetError extends Error {
 }
 
 export interface VerifyParams {
-  // payload: Payload;
   signature: string[];
   network?: string;
 

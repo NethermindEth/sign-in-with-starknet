@@ -19,8 +19,7 @@
           "type": "string",
           "maxLength": 31,
           "pattern": "^\\d+\\.\\d+\\.\\d+$",
-          "const": "0.0.1",
-          "errorMessage": "Version must be a string in the format x.y.z and must be 0.0.1"
+          "errorMessage": "Version must be a string in the format x.y.z"
         }
       },
       "required": ["chainId", "name", "version"],
@@ -30,6 +29,12 @@
     "message": {
       "type": "object",
       "properties": {
+        "version": {
+          "type": "string",
+          "maxLength": 31,
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "errorMessage": "Version must be a string in the format x.y.z"
+        },
         "address": {
           "type": "string",
           "pattern": "^0x[a-fA-F0-9]{63,64}$",
@@ -73,9 +78,9 @@
           "errorMessage": "NotBefore, if present, must be a valid date-time string"
         }
       },
-      "required": ["address", "domain", "issuedAt", "nonce", "statement", "uri"],
+      "required": ["address", "domain", "issuedAt", "nonce", "statement", "uri", "version"],
       "additionalProperties": false,
-      "errorMessage": "Message must include address, domain, issuedAt, nonce, statement, uri"
+      "errorMessage": "Message must include address, domain, issuedAt, nonce, statement, uri, version"
     },
     "primaryType": {
       "type": "string",
@@ -92,8 +97,8 @@
             "properties": {
               "name": {
                 "type": "string",
-                "enum": ["domain", "address", "statement", "uri", "nonce", "issuedAt"],
-                "errorMessage": "Name must be one of 'domain', 'address', 'statement', 'uri', 'nonce', 'issuedAt'"
+                "enum": ["domain", "version" ,"address", "statement", "uri", "nonce", "issuedAt"],
+                "errorMessage": "Name must be one of 'domain', 'version' , 'address', 'statement', 'uri', 'nonce', 'issuedAt'"
               },
               "type": {
                 "type": "string",
@@ -105,10 +110,10 @@
             "additionalProperties": false,
             "errorMessage": "Items must include name and type"
           },
-          "minItems": 6,
-          "maxItems": 6,
+          "minItems": 7,
+          "maxItems": 7,
           "uniqueItems": true,
-          "errorMessage": "Message must contain exactly 6 unique items"
+          "errorMessage": "Message must contain exactly 7 unique items"
         },
         "StarkNetDomain": {
           "type": "array",
@@ -122,8 +127,8 @@
               },
               "type": {
                 "type": "string",
-                "const": "felt",
-                "errorMessage": "Type must be 'felt'"
+                "enum": ["felt", "string"],
+                "errorMessage": "Type must be 'felt' or 'string'"
               }
             },
             "required": ["name", "type"],

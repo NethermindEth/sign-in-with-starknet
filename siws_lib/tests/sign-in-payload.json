@@ -10,7 +10,8 @@
       "issuedAt": "2023-06-07T21:13:02.178Z",
       "nonce": "MGo5mRz260SoMJpLa",
       "statement": "Please Sign in",
-      "uri": "http://143.42.2.9:3000"
+      "uri": "http://143.42.2.9:3000",
+      "version": "0.0.3"
     },
     "primaryType": "Message",
     "types": {

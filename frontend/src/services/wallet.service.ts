@@ -3,7 +3,7 @@ import { shortString, constants, hash, typedData, Account, CallData, stark, num,
 import { ISiwsDomain, ISiwsMessage, ISiwsTypedData, SiwsTypedData } from "siws_lib/dist"
 
 const env = process.env.NODE_ENV
-let BACKEND_ADDR = "";
+let BACKEND_ADDR = "http://localhost:3001";
 if (env == "production"){
   BACKEND_ADDR = "https://siws.nethermind.io/api";
 }
@@ -46,6 +46,7 @@ export async function createSiwsData(statement:string) {
       address,
       statement,
       uri: origin,
+      version: '0.0.5', //message version and not the starknetdomain version
       nonce: responseNonce,
       issuedAt: new Date().toISOString()}
 

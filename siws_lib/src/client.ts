@@ -43,11 +43,12 @@ export class SiwsTypedData implements ISiwsTypedData {
           { name: "uri", type: "string" },
           { name: "nonce", type: "string" },
           { name: "issuedAt", type: "string" },
+          { name: "version", type: "felt" },
         ],
         StarkNetDomain: [
-          { name: "name", type: "felt" },
-          { name: "chainId", type: "felt" },
-          { name: "version", type: "felt" },
+          { name: "name", type: "string" },
+          { name: "chainId", type: "string" },
+          { name: "version", type: "string" },
         ],
       };
     }
