@@ -13,7 +13,7 @@ import {
   walletAddress,
 } from "../services/wallet.service"
 import styles from "../styles/Home.module.css"
-import { Link, ExternalLinkIcon } from "@chakra-ui/react"
+import { Link } from "@chakra-ui/react"
 
 const Home: NextPage = () => {
   const [isConnected, setIsConnected] = useState(isWalletConnected())
