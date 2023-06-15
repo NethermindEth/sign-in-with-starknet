@@ -13,6 +13,7 @@ import {
   walletAddress,
 } from "../services/wallet.service"
 import styles from "../styles/Home.module.css"
+import { Link, ExternalLinkIcon } from "@chakra-ui/react"
 
 const Home: NextPage = () => {
   const [isConnected, setIsConnected] = useState(isWalletConnected())
@@ -54,10 +55,14 @@ const Home: NextPage = () => {
         {isConnected ? (
           <>
             <h3 style={{ margin: 0 }}>
+              <Link href='https://github.com/NethermindEth/sign-in-with-starknet' isExternal>
+                Github source </Link>
+            </h3>
+            <h3 style={{ margin: 0 }}>
               Wallet address: <code>{address && truncateAddress(address)}</code>
             </h3>
             <h3 style={{ margin: 0 }}>
-              Url: <code>{networkUrl()}</code>
+              Network: <code>{networkUrl()}</code>
             </h3>
             <SignInDapp />
           </>
