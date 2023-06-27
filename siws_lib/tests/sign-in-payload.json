@@ -1,60 +1,58 @@
 {
-    "domain": {
-      "chainId": "SN_GOERLI",
-      "name": "Example DApp",
-      "version": "0.0.1"
-    },
-    "message": {
-      "address": "0x1c62c52c1709acb3eb9195594e39c04323658463cfe0c641e39b99a83ba11a1",
-      "domain": "143.42.2.9:3000",
-      "issuedAt": "2023-06-07T21:13:02.178Z",
-      "nonce": "MGo5mRz260SoMJpLa",
-      "statement": "Please Sign in",
-      "uri": "http://143.42.2.9:3000",
-      "version": "0.0.3"
-    },
-    "primaryType": "Message",
-    "types": {
-      "Message": [
-        {
-          "name": "domain",
-          "type": "string"
-        },
-        {
-          "name": "address",
-          "type": "string"
-        },
-        {
-          "name": "statement",
-          "type": "string"
-        },
-        {
-          "name": "uri",
-          "type": "string"
-        },
-        {
-          "name": "nonce",
-          "type": "string"
-        },
-        {
-          "name": "issuedAt",
-          "type": "string"
-        }
-      ],
-      "StarkNetDomain": [
-        {
-          "name": "name",
-          "type": "felt"
-        },
-        {
-          "name": "chainId",
-          "type": "felt"
-        },
-        {
-          "name": "version",
-          "type": "felt"
-        }
-      ]
-    }
+  "domain": {
+    "version": "0.0.1",
+    "chainId": "SN_GOERLI",
+    "name": "localhost:3000"
+  },
+  "message": {
+    "address": "0x1c62c52c1709acb3eb9195594e39c04323658463cfe0c641e39b99a83ba11a1",
+    "statement": "Please Sign in",
+    "uri": "http://localhost:3000",
+    "version": "0.0.5",
+    "nonce": "dKZKdkSBv2sRAUfdu",
+    "issuedAt": "2023-06-27T21:12:25.836Z"
+  },
+  "primaryType": "Message",
+  "types": {
+    "Message": [
+      {
+        "name": "address",
+        "type": "felt"
+      },
+      {
+        "name": "statement",
+        "type": "string"
+      },
+      {
+        "name": "uri",
+        "type": "string"
+      },
+      {
+        "name": "nonce",
+        "type": "string"
+      },
+      {
+        "name": "issuedAt",
+        "type": "string"
+      },
+      {
+        "name": "version",
+        "type": "felt"
+      }
+    ],
+    "StarkNetDomain": [
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "chainId",
+        "type": "string"
+      },
+      {
+        "name": "version",
+        "type": "string"
+      }
+    ]
   }
-  
+}
