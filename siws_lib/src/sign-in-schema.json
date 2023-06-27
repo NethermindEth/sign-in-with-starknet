@@ -40,11 +40,6 @@
           "pattern": "^0x[a-fA-F0-9]{63,64}$",
           "errorMessage": "Address must be a hexadecimal string with 66 characters, including the '0x' prefix"
         },
-        "domain": {
-          "type": "string",
-          "maxLength": 31,
-          "errorMessage": "Domain must be a string and cannot exceed 31 characters"
-        },
         "issuedAt": {
           "type": "string",
           "format": "date-time",
@@ -78,9 +73,9 @@
           "errorMessage": "NotBefore, if present, must be a valid date-time string"
         }
       },
-      "required": ["address", "domain", "issuedAt", "nonce", "statement", "uri", "version"],
+      "required": ["address", "issuedAt", "nonce", "statement", "uri", "version"],
       "additionalProperties": false,
-      "errorMessage": "Message must include address, domain, issuedAt, nonce, statement, uri, version"
+      "errorMessage": "Message must include address, issuedAt, nonce, statement, uri, version"
     },
     "primaryType": {
       "type": "string",
@@ -97,8 +92,8 @@
             "properties": {
               "name": {
                 "type": "string",
-                "enum": ["domain", "version" ,"address", "statement", "uri", "nonce", "issuedAt"],
-                "errorMessage": "Name must be one of 'domain', 'version' , 'address', 'statement', 'uri', 'nonce', 'issuedAt'"
+                "enum": [ "version" ,"address", "statement", "uri", "nonce", "issuedAt", "expirationTime", "notBefore"],
+                "errorMessage": "Name must be one of 'version', 'address', 'statement', 'uri', 'nonce', 'issuedAt', 'expirationTime', 'notBefore'"
               },
               "type": {
                 "type": "string",
@@ -110,10 +105,10 @@
             "additionalProperties": false,
             "errorMessage": "Items must include name and type"
           },
-          "minItems": 7,
-          "maxItems": 7,
+          "minItems": 6,
+          "maxItems": 8,
           "uniqueItems": true,
-          "errorMessage": "Message must contain exactly 7 unique items"
+          "errorMessage": "Message must contain min 6-8 unique items "
         },
         "StarkNetDomain": {
           "type": "array",

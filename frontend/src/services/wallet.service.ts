@@ -39,10 +39,9 @@ export async function createSiwsData(statement:string) {
  
     const siwsDomain : ISiwsDomain = {version: '0.0.1',
                                    chainId: networkId() as any,
-                                    name: 'Sign in Test App'}
+                                    name: domain}
 
     const siwsMessage: ISiwsMessage = {
-      domain,
       address,
       statement,
       uri: origin,

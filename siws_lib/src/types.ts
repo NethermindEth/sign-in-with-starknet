@@ -4,7 +4,7 @@ export interface ISiwsDomain extends Record<string, unknown> {
   /** Chain ID to which the session is bound, and the network where
   * Contract Accounts must be resolved. */
   chainId: 'SN_GOERLI' | 'SN_GOERLI2' | 'SN_MAIN';
-  /* name of the app restricted to 31 characters*/
+  /* name of the app OR RFC 4501 dns authority that is requesting the signing, restricted to 31 characters*/
   name: string;
   /** Current version of the App making the signing request. */
   version: string;
@@ -13,8 +13,6 @@ export interface ISiwsDomain extends Record<string, unknown> {
 export interface ISiwsMessage extends Record<string, unknown> {
   /** Starknet address performing the signing */
   address: string;
-  /**RFC 4501 dns authority that is requesting the signing. */
-  domain: string;
   /** ISO 8601 datetime string of the current time. */
   issuedAt: string;
   /** Randomized token used to prevent replay attacks, at least 8 alphanumeric

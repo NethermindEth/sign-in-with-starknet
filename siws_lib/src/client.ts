@@ -37,7 +37,6 @@ export class SiwsTypedData implements ISiwsTypedData {
     else {
       this.types = {
         Message: [
-          { name: "domain", type: "string" },
           { name: "address", type: "felt" },
           { name: "statement", type: "string" },
           { name: "uri", type: "string" },
@@ -129,11 +128,11 @@ export class SiwsTypedData implements ISiwsTypedData {
       }
       
       /** Domain binding */
-      if (domain && domain !== this.message.domain) {
+      if (domain && domain !== this.domain.name) {
         reject({
           success: false,
           data: this,
-          error: new SignInWithStarknetError(ErrorTypes.DOMAIN_MISMATCH, domain, this.message.domain),
+          error: new SignInWithStarknetError(ErrorTypes.DOMAIN_MISMATCH, domain, this.domain.name),
         });
       }
 
