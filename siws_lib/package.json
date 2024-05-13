@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "tsdx build",
+    "build": "tsdx build --transpileOnly",
     "gcp-build": "tsdx build",
     "clean": "rm -fr node_modules dist && rm -f package-lock.json && npm install",
     "lint": "eslint --ext .js,.ts .",
