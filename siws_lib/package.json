@@ -30,7 +30,7 @@
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^2.1.1",
     "npm-check-updates": "^16.10.12",
-    "starknet": "^v5.10.2",
+    "starknet": "^6.8.0",
     "uri-js": "^4.4.1",
     "valid-url": "^1.0.9"
   },
