@@ -17,7 +17,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "siws_lib": "file:../siws_lib",
-    "starknet": "^v5.10.2",
+    "starknet": "^6.8.0",
     "@chakra-ui/icons": "^2.0.9",
     "@chakra-ui/react": "^2.6.1"
   },

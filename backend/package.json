@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "tsdx build && node  ./dist/index",
+    "start": "tsdx build --transpileOnly && node  ./dist/index",
     "clean": "rm -fr node_modules dist && rm -f package-lock.json && npm install"
   },
   "dependencies": {
@@ -15,7 +15,7 @@
     "express-session": "^1.17.3",
     "npm-check-updates": "^16.10.12",
     "siws_lib": "file:../siws_lib",
-    "starknet": "^v5.10",
+    "starknet": "^6.8.0",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
