@@ -7,13 +7,12 @@
       "properties": {
         "chainId": {
           "type": "string",
-          "enum": ["SN_GOERLI", "SN_GOERLI2", "SN_MAIN"],
-          "errorMessage": "ChainId must be one of 'SN_GOERLI', 'SN_GOERLI2', 'SN_MAIN'"
+          "enum": ["SN_GOERLI", "SN_SEPOLIA", "SN_MAIN"],
+          "errorMessage": "ChainId must be one of 'SN_GOERLI', 'SN_SEPOLIA', 'SN_MAIN'"
         },
         "name": {
           "type": "string",
-          "maxLength": 31,
-          "errorMessage": "Name must be a string and cannot exceed 31 characters"
+          "errorMessage": "Name must be a string"
         },
         "version": {
           "type": "string",
@@ -59,8 +58,7 @@
         },
         "statement": {
           "type": "string",
-          "maxLength": 31,
-          "errorMessage": "Statement must be a string and cannot exceed 31 characters"
+          "errorMessage": "Statement must be a string"
         },
         "uri": {
           "type": "string",
