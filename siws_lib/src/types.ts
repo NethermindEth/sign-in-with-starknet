@@ -4,7 +4,7 @@ export interface ISiwsDomain extends Record<string, unknown> {
   /** Chain ID to which the session is bound, and the network where
    * Contract Accounts must be resolved. */
   chainId: "SN_GOERLI" | "SN_SEPOLIA" | "SN_MAIN";
-  /* name of the app OR RFC 4501 dns authority that is requesting the signing, restricted to 31 characters*/
+  /* name of the app OR RFC 4501 dns authority that is requesting the signing*/
   name: string;
   /** Current version of the App making the signing request. */
   version: string;
