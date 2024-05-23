@@ -1,4 +1,4 @@
-import * as starknet from "starknet";
+import { RpcProvider, constants } from "starknet";
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
 import Session from "express-session";
@@ -14,15 +14,15 @@ import { error } from "console";
 
 /* providers for SN_MAIN, SN_GOERLI, SN_SEPOLIA */
 
-const goerliProvider = new starknet.RpcProvider({
-  nodeUrl: starknet.constants.NetworkName.SN_GOERLI,
+const goerliProvider = new RpcProvider({
+  nodeUrl: constants.NetworkName.SN_GOERLI,
 });
 
-const sepoliaProvider = new starknet.RpcProvider({
+const sepoliaProvider = new RpcProvider({
   nodeUrl: "https://starknet-sepolia.public.blastapi.io",
 });
 
-const mainProvider = new starknet.RpcProvider({
+const mainProvider = new RpcProvider({
   nodeUrl: "https://starknet-mainnet.public.blastapi.io",
 });
 
@@ -52,6 +52,11 @@ app.use(
     cookie: { secure: false, sameSite: true, maxAge: oneDay },
   })
 );
+
+app.use(express.static("public"));
+
+//import css without conflict
+
 
 const generateNonce = () => {
   const nonce = randomStringForEntropy(96);
@@ -100,11 +105,11 @@ app.post("/verify", async function(req: Request, res: Response) {
     }
 
     let starknetProvider = goerliProvider;
-    if (chainId == starknet.constants.NetworkName.SN_MAIN) {
+    if (chainId == constants.NetworkName.SN_MAIN) {
       starknetProvider = mainProvider;
-    } else if (chainId == starknet.constants.NetworkName.SN_SEPOLIA) {
+    } else if (chainId == constants.NetworkName.SN_SEPOLIA) {
       starknetProvider = sepoliaProvider;
-    } else if (chainId != starknet.constants.NetworkName.SN_GOERLI) {
+    } else if (chainId != constants.NetworkName.SN_GOERLI) {
       starknetProvider = goerliProvider;
     } else {
       throw new Error("Invalid chainId");

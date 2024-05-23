@@ -19,6 +19,7 @@ import {
   shortString,
   BigNumberish,
 } from "starknet";
+
 import { ISiwsTypedData, ISiwsDomain, ISiwsMessage } from "./types";
 
 import getMessageHash = typedData.getMessageHash;

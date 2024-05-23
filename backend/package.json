@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "tsdx build --transpileOnly && node  ./dist/index",
+    "start": "tsdx build --transpileOnly && node ./dist/index",
     "clean": "rm -fr node_modules dist && rm -f package-lock.json && npm install"
   },
   "dependencies": {
