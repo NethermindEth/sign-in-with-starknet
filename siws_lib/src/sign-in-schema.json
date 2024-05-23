@@ -7,24 +7,28 @@
       "properties": {
         "chainId": {
           "type": "string",
-          "enum": ["SN_GOERLI", "SN_GOERLI2", "SN_MAIN"],
-          "errorMessage": "ChainId must be one of 'SN_GOERLI', 'SN_GOERLI2', 'SN_MAIN'"
+          "enum": ["SN_GOERLI", "SN_SEPOLIA", "SN_MAIN"],
+          "errorMessage": "ChainId must be one of 'SN_GOERLI', 'SN_SEPOLIA', 'SN_MAIN'"
         },
         "name": {
           "type": "string",
-          "maxLength": 31,
-          "errorMessage": "Name must be a string and cannot exceed 31 characters"
+          "errorMessage": "Name must be a string"
         },
         "version": {
           "type": "string",
           "maxLength": 31,
           "pattern": "^\\d+\\.\\d+\\.\\d+$",
           "errorMessage": "Version must be a string in the format x.y.z"
+        },
+        "revision": {
+          "type": "string",
+          "enum": ["0", "1"],
+          "errorMessage": "Revision must be a string and must be either '0' or '1'"
         }
       },
-      "required": ["chainId", "name", "version"],
+      "required": ["chainId", "name", "version", "revision"],
       "additionalProperties": false,
-      "errorMessage": "Domain must include chainId, name, version"
+      "errorMessage": "Domain must include chainId, name, version, revision"
     },
     "message": {
       "type": "object",
@@ -54,8 +58,7 @@
         },
         "statement": {
           "type": "string",
-          "maxLength": 31,
-          "errorMessage": "Statement must be a string and cannot exceed 31 characters"
+          "errorMessage": "Statement must be a string"
         },
         "uri": {
           "type": "string",
@@ -73,7 +76,14 @@
           "errorMessage": "NotBefore, if present, must be a valid date-time string"
         }
       },
-      "required": ["address", "issuedAt", "nonce", "statement", "uri", "version"],
+      "required": [
+        "address",
+        "issuedAt",
+        "nonce",
+        "statement",
+        "uri",
+        "version"
+      ],
       "additionalProperties": false,
       "errorMessage": "Message must include address, issuedAt, nonce, statement, uri, version"
     },
@@ -92,7 +102,16 @@
             "properties": {
               "name": {
                 "type": "string",
-                "enum": [ "version" ,"address", "statement", "uri", "nonce", "issuedAt", "expirationTime", "notBefore"],
+                "enum": [
+                  "version",
+                  "address",
+                  "statement",
+                  "uri",
+                  "nonce",
+                  "issuedAt",
+                  "expirationTime",
+                  "notBefore"
+                ],
                 "errorMessage": "Name must be one of 'version', 'address', 'statement', 'uri', 'nonce', 'issuedAt', 'expirationTime', 'notBefore'"
               },
               "type": {
@@ -110,15 +129,15 @@
           "uniqueItems": true,
           "errorMessage": "Message must contain min 6-8 unique items "
         },
-        "StarkNetDomain": {
+        "StarknetDomain": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
               "name": {
                 "type": "string",
-                "enum": ["name", "chainId", "version"],
-                "errorMessage": "Name must be one of 'name', 'chainId', 'version'"
+                "enum": ["name", "chainId", "version", "revision"],
+                "errorMessage": "Name must be one of 'name', 'chainId', 'version', 'revision'"
               },
               "type": {
                 "type": "string",
@@ -130,15 +149,15 @@
             "additionalProperties": false,
             "errorMessage": "Items must include name and type"
           },
-          "minItems": 3,
-          "maxItems": 3,
+          "minItems": 4,
+          "maxItems": 4,
           "uniqueItems": true,
-          "errorMessage": "StarkNetDomain must contain exactly 3 unique items"
+          "errorMessage": "StarknetDomain must contain exactly 3 unique items"
         }
       },
-      "required": ["Message", "StarkNetDomain"],
+      "required": ["Message", "StarknetDomain"],
       "additionalProperties": false,
-      "errorMessage": "Types must include Message and StarkNetDomain"
+      "errorMessage": "Types must include Message and StarknetDomain"
     }
   },
   "required": ["domain", "message", "primaryType", "types"],

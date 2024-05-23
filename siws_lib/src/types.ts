@@ -1,13 +1,15 @@
-import { Provider } from "starknet";
+import * as starknet from "starknet";
 
 export interface ISiwsDomain extends Record<string, unknown> {
   /** Chain ID to which the session is bound, and the network where
-  * Contract Accounts must be resolved. */
-  chainId: 'SN_GOERLI' | 'SN_GOERLI2' | 'SN_MAIN';
-  /* name of the app OR RFC 4501 dns authority that is requesting the signing, restricted to 31 characters*/
+   * Contract Accounts must be resolved. */
+  chainId: "SN_GOERLI" | "SN_SEPOLIA" | "SN_MAIN";
+  /* name of the app OR RFC 4501 dns authority that is requesting the signing*/
   name: string;
   /** Current version of the App making the signing request. */
   version: string;
+  /** Current revision of the TypedData making the signing request. */
+  revision: string;
 }
 
 export interface ISiwsMessage extends Record<string, unknown> {
@@ -16,7 +18,7 @@ export interface ISiwsMessage extends Record<string, unknown> {
   /** ISO 8601 datetime string of the current time. */
   issuedAt: string;
   /** Randomized token used to prevent replay attacks, at least 8 alphanumeric
- * characters. */
+   * characters. */
   nonce: string;
   /** Human-readable ASCII assertion that the user will sign. */
   statement: string;
@@ -33,16 +35,15 @@ export interface ISiwsMessage extends Record<string, unknown> {
   notBefore?: string;
 }
 
-
 /* ISiwsTypedData has to map to the structure expected by starknet.js and it is specified here
-* https://www.starknetjs.com/docs/guides/signature/ */
+ * https://www.starknetjs.com/docs/guides/signature/ */
 export interface ISiwsTypedData {
   domain: ISiwsDomain;
   message: ISiwsMessage;
   primaryType: string;
   types: {
     Message: Array<{ name: string; type: string }>;
-    StarkNetDomain: Array<{ name: string; type: string }>;
+    StarknetDomain: Array<{ name: string; type: string }>;
   };
 }
 
@@ -122,7 +123,6 @@ export interface VerifyParams {
 
   /**ISO 8601 datetime string of the current time. */
   time?: string;
-
 }
 
 /**
@@ -141,6 +141,5 @@ export interface SignInWithStarknetResponse {
 
 export interface VerifyOpts {
   /** ethers provider to be used for EIP-1271 validation */
-  provider?: Provider;
-
+  provider?: any;
 }

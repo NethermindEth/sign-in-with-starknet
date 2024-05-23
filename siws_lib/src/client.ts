@@ -1,16 +1,28 @@
-import Ajv2020 from "ajv/dist/2020"
-import addFormats from 'ajv-formats';
-import ajvErrors from 'ajv-errors';
-import schema from './sign-in-schema.json';
+import Ajv2020 from "ajv/dist/2020";
+import addFormats from "ajv-formats";
+import ajvErrors from "ajv-errors";
+import schema from "./sign-in-schema.json";
 import abiAccountContract from "./account-contract-abi.json";
-import { ErrorTypes, SignInWithStarknetError, SignInWithStarknetResponse, VerifyParams, VerifyOpts } from "./types";
-import { typedData, num, Provider, Contract, shortString } from "starknet";
+import {
+  ErrorTypes,
+  SignInWithStarknetError,
+  SignInWithStarknetResponse,
+  VerifyParams,
+  VerifyOpts,
+} from "./types";
+import {
+  TypedData,
+  typedData,
+  num,
+  RpcProvider,
+  Contract,
+  shortString,
+  BigNumberish,
+} from "starknet";
+
 import { ISiwsTypedData, ISiwsDomain, ISiwsMessage } from "./types";
 
-import TypedData = typedData.TypedData;
 import getMessageHash = typedData.getMessageHash;
-import BigNumberish = num.BigNumberish;
-
 
 export class SiwsTypedData implements ISiwsTypedData {
   domain: ISiwsDomain;
@@ -18,23 +30,25 @@ export class SiwsTypedData implements ISiwsTypedData {
   primaryType: string;
   types: {
     Message: Array<{ name: string; type: string }>;
-    StarkNetDomain: Array<{ name: string; type: string }>;
+    StarknetDomain: Array<{ name: string; type: string }>;
   };
 
-  constructor(domain: ISiwsDomain, message: ISiwsMessage, primaryType?: string, types?: any) {
-
+  constructor(
+    domain: ISiwsDomain,
+    message: ISiwsMessage,
+    primaryType?: string,
+    types?: any
+  ) {
     this.domain = domain;
     this.message = message;
     if (primaryType != null) {
       this.primaryType = primaryType;
-    }
-    else {
+    } else {
       this.primaryType = "Message";
     }
     if (types != null) {
       this.types = types;
-    }
-    else {
+    } else {
       this.types = {
         Message: [
           { name: "address", type: "felt" },
@@ -44,10 +58,11 @@ export class SiwsTypedData implements ISiwsTypedData {
           { name: "issuedAt", type: "string" },
           { name: "version", type: "felt" },
         ],
-        StarkNetDomain: [
+        StarknetDomain: [
           { name: "name", type: "string" },
           { name: "chainId", type: "string" },
           { name: "version", type: "string" },
+          { name: "revision", type: "string" },
         ],
       };
     }
@@ -72,17 +87,17 @@ export class SiwsTypedData implements ISiwsTypedData {
       domain: this.domain,
       message: this.message,
       primaryType: this.primaryType,
-      types: this.types
+      types: this.types,
     };
 
     // Perform validation
     if (!validate(dataForValidation)) {
       const errors = validate.errors;
       // console.log(validate.errors);
-      const errorMessage = errors.map((error) => `${error.instancePath} ${error.message}`).join('. ');
-      throw new SignInWithStarknetError(
-        errorMessage as ErrorTypes,
-      )
+      const errorMessage = errors
+        .map((error) => `${error.instancePath} ${error.message}`)
+        .join(". ");
+      throw new SignInWithStarknetError(errorMessage as ErrorTypes);
     }
     return true;
   }
@@ -90,12 +105,25 @@ export class SiwsTypedData implements ISiwsTypedData {
   // Static method to create an instance from a JSON blob
   public static fromJson(json: string): SiwsTypedData {
     const obj = JSON.parse(json);
-    return new SiwsTypedData(obj.domain, obj.message, obj.primaryType, obj.types);
+    return new SiwsTypedData(
+      obj.domain,
+      obj.message,
+      obj.primaryType,
+      obj.types
+    );
   }
 
-  async verifyMessageHash(hash: BigNumberish, signature: string[], provider: Provider): Promise<boolean> {
+  async verifyMessageHash(
+    hash: BigNumberish,
+    signature: string[],
+    provider: RpcProvider
+  ): Promise<boolean> {
     try {
-      const accountContract = new Contract(abiAccountContract, this.message.address, provider);
+      const accountContract = new Contract(
+        abiAccountContract,
+        this.message.address,
+        provider
+      );
       await accountContract.call("isValidSignature", [hash, signature]);
       return true;
     } catch (e) {
@@ -104,7 +132,11 @@ export class SiwsTypedData implements ISiwsTypedData {
     }
   }
 
-  async verifyMessage(data: typedData.TypedData, signature: string[], provider: Provider): Promise<boolean> {
+  async verifyMessage(
+    data: TypedData,
+    signature: string[],
+    provider: RpcProvider
+  ): Promise<boolean> {
     const hash = await getMessageHash(data, this.message.address);
     return this.verifyMessageHash(hash, signature, provider);
   }
@@ -114,7 +146,10 @@ export class SiwsTypedData implements ISiwsTypedData {
    * @param params Parameters to verify the integrity of the message, signature is required.
    * @returns {Promise<SignInWithStarknetResponse>} This object if valid.
    */
-  public async verify(params: VerifyParams, opts: VerifyOpts): Promise<SignInWithStarknetResponse> {
+  public async verify(
+    params: VerifyParams,
+    opts: VerifyOpts
+  ): Promise<SignInWithStarknetResponse> {
     return new Promise<SignInWithStarknetResponse>((resolve, reject) => {
       const { domain, nonce, network, signature } = params;
 
@@ -123,16 +158,24 @@ export class SiwsTypedData implements ISiwsTypedData {
         reject({
           success: false,
           data: this,
-          error: new SignInWithStarknetError(ErrorTypes.NETWORK_MISMATCH, network, this.domain.chainId),
+          error: new SignInWithStarknetError(
+            ErrorTypes.NETWORK_MISMATCH,
+            network,
+            this.domain.chainId
+          ),
         });
       }
-      
+
       /** Domain binding */
       if (domain && domain !== this.domain.name) {
         reject({
           success: false,
           data: this,
-          error: new SignInWithStarknetError(ErrorTypes.DOMAIN_MISMATCH, domain, this.domain.name),
+          error: new SignInWithStarknetError(
+            ErrorTypes.DOMAIN_MISMATCH,
+            domain,
+            this.domain.name
+          ),
         });
       }
 
@@ -141,7 +184,11 @@ export class SiwsTypedData implements ISiwsTypedData {
         reject({
           success: false,
           data: this,
-          error: new SignInWithStarknetError(ErrorTypes.NONCE_MISMATCH, nonce, this.message.nonce),
+          error: new SignInWithStarknetError(
+            ErrorTypes.NONCE_MISMATCH,
+            nonce,
+            this.message.nonce
+          ),
         });
       }
 
@@ -188,7 +235,10 @@ export class SiwsTypedData implements ISiwsTypedData {
             return reject({
               success: false,
               data: this,
-              error: new SignInWithStarknetError(ErrorTypes.INVALID_SIGNATURE, "Signature verification failed"),
+              error: new SignInWithStarknetError(
+                ErrorTypes.INVALID_SIGNATURE,
+                "Signature verification failed"
+              ),
             });
           return resolve({
             success: true,
