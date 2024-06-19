@@ -1,15 +1,6 @@
 import { connect, disconnect, StarknetWindowObject } from "get-starknet";
 import {
-  shortString,
   constants,
-  hash,
-  typedData,
-  Account,
-  CallData,
-  stark,
-  num,
-  Provider,
-  Contract,
 } from "starknet";
 import {
   ISiwsDomain,
@@ -17,6 +8,7 @@ import {
   ISiwsTypedData,
   SiwsTypedData,
 } from "siws_lib/dist";
+import { formatAddress } from "./address.service";
 
 const env = process.env.NODE_ENV;
 let BACKEND_ADDR = "http://localhost:3001";
@@ -33,33 +25,30 @@ export const isWalletConnected = (): boolean => {
   return Boolean(window.starknet?.isConnected);
 };
 
-export const connectWallet = async () => await connect({ modalMode: "canAsk" });
+export const connectWallet = async () => await connect({ modalMode: "alwaysAsk" });
+export const disconnectWallet = async () => await disconnect();
+export const connectWalletSilent = async () => await connect({ modalMode: "neverAsk" });
 
-export const walletAddress = async (): Promise<string | undefined> => {
-  try {
-    const address = await window.starknet?.account?.address;
-    return address;
-  } catch {}
-};
-
-export async function createSiwsData(statement: string) {
+export async function createSiwsData(statement: string, connection: StarknetWindowObject) {
   const domain = window.location.host;
   const origin = window.location.origin;
   const res = await fetch(`${BACKEND_ADDR}/nonce`, {
     credentials: "include",
   });
   const responseNonce = await res.text();
-  const address = await walletAddress();
+  const address = connection.selectedAddress ?? connection.account.address;
+
+  const networkName = await networkId(connection);
 
   const siwsDomain: ISiwsDomain = {
     version: "0.0.1",
-    chainId: (await networkId()) as any,
+    chainId: networkName,
     name: domain,
     revision: "1",
   };
 
   const siwsMessage: ISiwsMessage = {
-    address,
+    address: formatAddress(address),
     statement,
     uri: origin,
     version: "0.0.5", //message version and not the starknetdomain version
@@ -75,9 +64,6 @@ export async function verifySignInData(
   signindata: SiwsTypedData,
   signature: string[]
 ) {
-  const starknet = window.starknet as StarknetWindowObject;
-  await starknet.enable();
-
   const res = await fetch(`${BACKEND_ADDR}/verify`, {
     method: "POST",
     headers: {
@@ -96,47 +82,34 @@ export async function verifySignInData(
   return true;
 }
 
-export const networkId = async (): Promise<string> => {
+export const networkId = async (connection: StarknetWindowObject): Promise<"SN_MAIN" | "SN_SEPOLIA"> => {
   try {
-    const chainId = await window.starknet?.provider?.getChainId();
+    const chainId = await connection?.provider?.getChainId();
 
     if (constants.StarknetChainId.SN_MAIN === (chainId as any)) {
       return constants.NetworkName.SN_MAIN;
     } else if (constants.StarknetChainId.SN_SEPOLIA === (chainId as any)) {
       return constants.NetworkName.SN_SEPOLIA;
-    } else if (constants.StarknetChainId.SN_GOERLI === (chainId as any)) {
-      return constants.NetworkName.SN_GOERLI;
     } else {
-      return "localhost";
+      return constants.NetworkName.SN_SEPOLIA;
     }
   } catch {
-    return "localhost"; // or handle error appropriately
+      return constants.NetworkName.SN_SEPOLIA;
   }
 };
 
-export const networkUrl = async (): Promise<string> => {
-  try {
-    return await networkId();
-  } catch {}
-};
-
-export const signMessage = async (signindata: ISiwsTypedData) => {
-  const starknet = window.starknet as StarknetWindowObject;
-  await starknet.enable();
+export const signMessage = async (signindata: ISiwsTypedData, connection: StarknetWindowObject) => {
   // checks that enable succeeded
-  if (starknet.isConnected === false)
+  if (connection.isConnected === false)
     throw Error("starknet wallet not connected");
 
-  const signature = await starknet.account.signMessage(signindata);
+  const signature = await connection?.account?.signMessage(signindata);
+
+  if(connection.name === 'Braavos' && Array.isArray(signature)) { 
+    if(signature.length > 2) {
+      return [...signature].splice(signature.length-2)
+    }
+  }
   return signature;
 };
 
-export const addWalletChangeListener = async (
-  handleEvent: (accounts: string[]) => void
-) => {
-  window.starknet?.on("accountsChanged", handleEvent);
-};
-
-export const isPreauthorized = async (): Promise<boolean> => {
-  return !!window.starknet?.isPreauthorized;
-};

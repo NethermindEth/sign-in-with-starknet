@@ -2,6 +2,21 @@
   padding: 0 2rem;
 }
 
+.icon {
+  width: 24px;
+  height: 24px;
+}
+
+.flexRowCenter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  width: min-content;
+}
+
 .main {
   min-height: 100vh;
   padding: 4rem 0;

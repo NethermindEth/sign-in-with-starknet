@@ -12,11 +12,7 @@ import {
 import { SiwsTypedData } from "siws_lib/dist";
 import { error } from "console";
 
-/* providers for SN_MAIN, SN_GOERLI, SN_SEPOLIA */
-
-const goerliProvider = new RpcProvider({
-  nodeUrl: constants.NetworkName.SN_GOERLI,
-});
+/* providers for SN_MAIN, SN_SEPOLIA */
 
 const sepoliaProvider = new RpcProvider({
   nodeUrl: "https://starknet-sepolia.public.blastapi.io",
@@ -104,13 +100,11 @@ app.post("/verify", async function(req: Request, res: Response) {
       throw new Error("Signature was not provided");
     }
 
-    let starknetProvider = goerliProvider;
+    let starknetProvider = sepoliaProvider;
     if (chainId == constants.NetworkName.SN_MAIN) {
       starknetProvider = mainProvider;
     } else if (chainId == constants.NetworkName.SN_SEPOLIA) {
       starknetProvider = sepoliaProvider;
-    } else if (chainId != constants.NetworkName.SN_GOERLI) {
-      starknetProvider = goerliProvider;
     } else {
       throw new Error("Invalid chainId");
     }

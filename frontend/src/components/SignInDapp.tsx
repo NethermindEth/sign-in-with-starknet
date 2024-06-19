@@ -1,17 +1,18 @@
 import { FC, useEffect, useState } from "react";
 
 import {
-  networkId,
   signMessage,
   createSiwsData,
   verifySignInData,
 } from "../services/wallet.service";
+
 import styles from "../styles/Home.module.css";
 import MessageEditor from "./MessageEditor";
 import { SiwsTypedData } from "siws_lib/dist";
 import { Spinner, Code } from "@chakra-ui/react";
+import { StarknetWindowObject } from "get-starknet";
 
-export const SignInDapp: FC = () => {
+export const SignInDapp: FC<{connection: StarknetWindowObject}> = ({ connection }) => {
   // const [shortText, setShortText] = useState("Please sign in")
   const [lastSig, setLastSig] = useState<string[]>([]);
   const [signInData, setSignInData] = useState<SiwsTypedData>();
@@ -29,7 +30,7 @@ export const SignInDapp: FC = () => {
     const createSignInData = async () => {
       const loginString =
         "Starknet enables scalable and secure execution of complex computations on Ethereum, revolutionizing decentralized applications.";
-      let siwsData = await createSiwsData(loginString);
+      let siwsData = await createSiwsData(loginString, connection);
       return siwsData;
     };
     createSignInData()
@@ -37,12 +38,12 @@ export const SignInDapp: FC = () => {
         setSignInData(siwsData);
       })
       .catch((e) => console.error(e));
-  }, []);
+  }, [connection]);
 
   const handleSignSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      const result = await signMessage(signInData);
+      const result: any = await signMessage(signInData, connection);
       setLastSig(result);
     } catch (e) {
       console.error(e);

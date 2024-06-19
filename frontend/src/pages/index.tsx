@@ -1,61 +1,75 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { SignInDapp } from "../components/SignInDapp";
 import { truncateAddress } from "../services/address.service";
 import {
-  addWalletChangeListener,
   connectWallet,
-  isPreauthorized,
-  isWalletConnected,
-  networkUrl,
-  walletAddress,
+  connectWalletSilent,
 } from "../services/wallet.service";
+
 import styles from "../styles/Home.module.css";
 import { Link } from "@chakra-ui/react";
+import { StarknetWindowObject } from "get-starknet";
+import { shortString } from "starknet";
 
-function NetworkDisplay() {
-  const [network, setNetwork] = useState<string>("");
+const NetworkDisplay:React.FC<{
+  connection: StarknetWindowObject, 
+  setConnection: React.Dispatch<React.SetStateAction<StarknetWindowObject | null>>
+}> = ({ connection, setConnection }) => {
 
+  const [network, setNetwork] = useState<string | null>(null)
   useEffect(() => {
-    networkUrl().then(setNetwork);
-  }, []);
+    try {
+      connection?.provider?.getChainId().then(chainId => setNetwork(chainId));
+    } catch(e) {
+      console.error(e)
+      setNetwork(null)
+    }
+  }, [connection])
+  const networkName = useMemo(() => {
+    try {
+      return shortString.decodeShortString(network ?? "0x0")
+    } catch(e) {
+      return network
+    }
+  }, [network])
 
   return (
-    <h3 style={{ margin: 0 }}>
-      Network: <code>{network}</code>
+    <h3 style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <span>ChainId: <code>{network}</code></span>
+      <span>Connected Wallet: <code className={styles.flexRowCenter}><img src={connection.icon} className={styles.icon} alt="icon" /> {connection.name}</code></span>
+      <span>Network Name: <code>{networkName}</code></span>
+      <button onClick={() => setConnection(null)}>Disconnect</button>
     </h3>
   );
 }
 
 const Home: NextPage = () => {
-  const [isConnected, setIsConnected] = useState(isWalletConnected());
-  const [address, setAddress] = useState<string>();
 
-  useEffect(() => {
-    addWalletChangeListener((accounts) => {
-      if (accounts.length > 0) {
-        setAddress(accounts[0]);
-      } else {
-        setAddress("");
-        setIsConnected(false);
-      }
-    });
-  }, []);
+  const [ walletConnection, setWalletConnection] = useState<StarknetWindowObject | null>(null)
+
+  const isConnected = useMemo(() => {
+    return walletConnection?.isConnected ?? false
+  }, [walletConnection])
+
+  const address = useMemo(() => {
+    return walletConnection?.selectedAddress ?? "" 
+  }, [walletConnection])
 
   useEffect(() => {
     (async () => {
-      if (await isPreauthorized()) {
-        await handleConnectClick();
-      }
+      const connection = await connectWalletSilent();
+      if(connection)
+        setWalletConnection(connection);
     })();
   }, []);
 
   const handleConnectClick = async () => {
-    await connectWallet();
-    setIsConnected(isWalletConnected());
-    setAddress(await walletAddress());
+    const connection = await connectWallet();
+    if(connection)
+        setWalletConnection(connection);
   };
 
   return (
@@ -73,14 +87,14 @@ const Home: NextPage = () => {
                 href="https://github.com/NethermindEth/sign-in-with-starknet"
                 isExternal
               >
-                Github source{" "}
+                Github source
               </Link>
             </h3>
             <h3 style={{ margin: 0 }}>
               Wallet address: <code>{address && truncateAddress(address)}</code>
             </h3>
-            <NetworkDisplay />
-            <SignInDapp />
+            <NetworkDisplay connection={walletConnection} setConnection={setWalletConnection} />
+            <SignInDapp connection={walletConnection} />
           </>
         ) : (
           <>
