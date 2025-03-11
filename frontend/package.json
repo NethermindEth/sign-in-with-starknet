@@ -11,9 +11,9 @@
     "clean": "rm -fr node_modules dist && rm -f package-lock.json && rm -fr .next && npm install"
   },
   "dependencies": {
-    "ethers": "^5.5.1",
+    "ethers": "^5.8.0",
     "get-starknet": "^2.1.0",
-    "next": "^12.1.4",
+    "next": "^14.2.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "siws_lib": "file:../siws_lib",
